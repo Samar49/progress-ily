@@ -1,0 +1,600 @@
+/* =========================================================
+   Progress.ily - Glassmorphism + motion layer
+   Standalone stylesheet loaded after styles.css / extra.css.
+   Remove the `import "./glass.css"` line in App.jsx to switch it off.
+   Everything is variable-driven, so light and dark themes both work,
+   and motion is disabled for users who prefer reduced motion.
+   ========================================================= */
+
+.app{
+  --g-bg-1:#e4f7ef; --g-bg-2:#e6eefc; --g-bg-3:#f3eaff;
+  --g-blob-1:rgba(7,134,92,.32); --g-blob-2:rgba(59,130,246,.26); --g-blob-3:rgba(139,92,246,.24);
+  --g-fill:rgba(255,255,255,.58);
+  --g-fill-strong:rgba(255,255,255,.78);
+  --g-fill-soft:rgba(255,255,255,.38);
+  --g-stroke:rgba(255,255,255,.75);
+  --g-border:rgba(15,40,80,.08);
+  --g-shadow:0 8px 32px rgba(20,50,90,.10);
+  --g-shadow-hover:0 16px 44px rgba(7,134,92,.18);
+  --g-blur:18px;
+  --g-ease:cubic-bezier(.22,.8,.3,1);
+}
+.app.theme-dark{
+  --g-bg-1:#0a1a1a; --g-bg-2:#0b1424; --g-bg-3:#150f26;
+  --g-blob-1:rgba(7,160,110,.30); --g-blob-2:rgba(59,130,246,.24); --g-blob-3:rgba(139,92,246,.26);
+  --g-fill:rgba(22,34,48,.55);
+  --g-fill-strong:rgba(26,40,56,.80);
+  --g-fill-soft:rgba(255,255,255,.04);
+  --g-stroke:rgba(255,255,255,.10);
+  --g-border:rgba(255,255,255,.07);
+  --g-shadow:0 8px 32px rgba(0,0,0,.35);
+  --g-shadow-hover:0 16px 44px rgba(7,200,140,.16);
+}
+
+/* ---------- animated aurora background ---------- */
+.app{
+  background:linear-gradient(135deg,var(--g-bg-1),var(--g-bg-2) 55%,var(--g-bg-3));
+  background-attachment:fixed;
+  position:relative;
+  isolation:isolate;
+}
+.app::before,.app::after{
+  content:"";position:fixed;z-index:-1;pointer-events:none;border-radius:50%;
+  filter:blur(70px);will-change:transform;
+}
+.app::before{
+  width:46vw;height:46vw;left:-12vw;top:-14vw;
+  background:radial-gradient(circle,var(--g-blob-1),transparent 65%);
+  animation:g-float-a 22s ease-in-out infinite alternate;
+}
+.app::after{
+  width:42vw;height:42vw;right:-10vw;bottom:-12vw;
+  background:radial-gradient(circle,var(--g-blob-2),transparent 65%);
+  animation:g-float-b 26s ease-in-out infinite alternate;
+}
+.main-shell{position:relative}
+.main-shell::before{
+  content:"";position:fixed;z-index:-1;pointer-events:none;left:42vw;top:30vh;
+  width:30vw;height:30vw;border-radius:50%;filter:blur(80px);
+  background:radial-gradient(circle,var(--g-blob-3),transparent 65%);
+  animation:g-float-c 30s ease-in-out infinite alternate;
+}
+@keyframes g-float-a{to{transform:translate(12vw,10vh) scale(1.15)}}
+@keyframes g-float-b{to{transform:translate(-14vw,-12vh) scale(1.2)}}
+@keyframes g-float-c{to{transform:translate(-18vw,14vh) scale(.85)}}
+
+/* ---------- glass surfaces ---------- */
+.sidebar,.topbar,.footer{
+  background:var(--g-fill);
+  -webkit-backdrop-filter:blur(var(--g-blur)) saturate(160%);
+  backdrop-filter:blur(var(--g-blur)) saturate(160%);
+}
+.sidebar{border-right:1px solid var(--g-stroke);box-shadow:4px 0 30px rgba(20,50,90,.05)}
+.topbar{position:sticky;top:0;z-index:20;border-bottom:1px solid var(--g-stroke)}
+.footer{border-top:1px solid var(--g-stroke)}
+
+.panel,.metric,.goal-card,.goal-mini,.pi-month-cell,.pi-week-col,
+.pi-dropdown,.modal,.auth-card,.pi-timer-card,.mini-calendar,.schedule{
+  background:var(--g-fill);
+  -webkit-backdrop-filter:blur(var(--g-blur)) saturate(150%);
+  backdrop-filter:blur(var(--g-blur)) saturate(150%);
+  border:1px solid var(--g-stroke);
+  box-shadow:var(--g-shadow),inset 0 1px 0 rgba(255,255,255,.35);
+}
+.theme-dark .panel,.theme-dark .metric,.theme-dark .goal-card,.theme-dark .goal-mini,
+.theme-dark .modal,.theme-dark .pi-dropdown{box-shadow:var(--g-shadow),inset 0 1px 0 rgba(255,255,255,.06)}
+.modal,.pi-dropdown,.auth-card{background:var(--g-fill-strong)}
+.modal-backdrop{
+  background:rgba(8,20,40,.35);
+  -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);
+  animation:g-fade .25s ease both;
+}
+.modal{animation:g-pop .35s var(--g-ease) both}
+.pi-dropdown{animation:g-drop .22s var(--g-ease) both;transform-origin:top right}
+
+/* nested surfaces stay light so glass doesn't stack too heavily */
+.panel .panel,.panel .goal-mini,.panel .metric,.task-panel .table-scroll{
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}
+.goal-mini,.pi-month-cell,.pi-week-col{background:var(--g-fill-soft)}
+.metric.tinted.mint,.metric.tinted.lilac,.metric.tinted.blush,.metric.tinted.ice{background:var(--g-fill)}
+.task-table thead{background:var(--g-fill-soft)}
+.theme-dark .task-table thead{background:rgba(255,255,255,.05)}
+.task-table tbody tr{transition:background .2s ease}
+.task-table tbody tr:hover{background:rgba(7,134,92,.07)}
+
+/* inputs */
+.global-search,.field input,.field select,.field textarea,.table-search,
+.pi-select-inline,.square-btn,.date-label,.pi-custom input{
+  background:var(--g-fill-soft);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+}
+.global-search:focus-within,.field input:focus,.field select:focus,.field textarea:focus,.table-search:focus-within{
+  border-color:#07865c;
+  box-shadow:0 0 0 4px rgba(7,134,92,.15);
+  background:var(--g-fill-strong);
+  outline:none;
+}
+
+/* ---------- navigation ---------- */
+.nav-item{position:relative;overflow:hidden;transition:background .25s ease,color .25s ease,transform .25s var(--g-ease)}
+.nav-item:hover{transform:translateX(4px);background:var(--g-fill-strong)}
+.nav-item.active{
+  background:linear-gradient(100deg,rgba(7,134,92,.18),rgba(36,184,133,.10));
+  box-shadow:inset 0 0 0 1px rgba(7,134,92,.22),0 6px 18px rgba(7,134,92,.14);
+}
+.nav-item.active::before{
+  content:"";position:absolute;left:0;top:22%;bottom:22%;width:3px;border-radius:3px;
+  background:linear-gradient(#07865c,#24b885);
+}
+.nav-item svg{transition:transform .3s var(--g-ease)}
+.nav-item:hover svg{transform:scale(1.18) rotate(-6deg)}
+.brand-mark{animation:g-sway 6s ease-in-out infinite}
+.avatar{box-shadow:0 0 0 3px rgba(7,134,92,.18);transition:transform .3s var(--g-ease)}
+.avatar:hover{transform:scale(1.08) rotate(4deg)}
+
+/* ---------- cards: lift + glow + light sweep ---------- */
+.metric,.goal-card,.goal-mini,.panel,.pi-month-cell,.pi-week-task{
+  transition:transform .35s var(--g-ease),box-shadow .35s ease,border-color .3s ease,background .3s ease;
+}
+.metric,.goal-card,.goal-mini{position:relative}
+.metric:hover,.goal-card:hover,.goal-mini:hover{
+  transform:translateY(-4px);
+  box-shadow:var(--g-shadow-hover),inset 0 1px 0 rgba(255,255,255,.5);
+  border-color:rgba(7,134,92,.35);
+}
+.metric::after,.goal-card::after,.goal-mini::after{
+  content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;
+  background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.45) 50%,transparent 60%);
+  background-size:300% 100%;background-position:130% 0;background-repeat:no-repeat;
+  transition:background-position .9s var(--g-ease);
+}
+.theme-dark .metric::after,.theme-dark .goal-card::after,.theme-dark .goal-mini::after{
+  background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.08) 50%,transparent 60%);
+  background-size:300% 100%;background-position:130% 0;background-repeat:no-repeat;
+}
+.metric:hover::after,.goal-card:hover::after,.goal-mini:hover::after{background-position:-30% 0}
+.pi-month-cell:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(7,134,92,.15)}
+.pi-week-task:hover{transform:translateX(3px)}
+
+.icon-box{transition:transform .35s var(--g-ease),box-shadow .35s ease}
+.metric:hover .icon-box,.goal-card:hover .icon-box,.deadline:hover .icon-box{
+  transform:scale(1.12) rotate(-6deg);box-shadow:0 8px 20px rgba(20,50,90,.15);
+}
+.deadline,.milestone{transition:transform .25s var(--g-ease),background .25s ease;border-radius:10px}
+.deadline:hover,.milestone:hover{transform:translateX(4px);background:var(--g-fill-soft)}
+
+/* ---------- buttons ---------- */
+.primary-btn,.today-btn{position:relative;overflow:hidden;transition:transform .25s var(--g-ease),box-shadow .3s ease,filter .2s ease}
+.primary-btn{
+  background:linear-gradient(110deg,#07865c,#10a874 55%,#07865c);
+  background-size:200% 100%;
+  box-shadow:0 8px 22px rgba(7,134,92,.32);
+}
+.primary-btn:hover:not(:disabled){
+  transform:translateY(-2px);background-position:100% 0;
+  box-shadow:0 12px 28px rgba(7,134,92,.42);
+}
+.primary-btn:active:not(:disabled){transform:translateY(0) scale(.97)}
+.primary-btn::after{
+  content:"";position:absolute;top:0;bottom:0;width:40%;left:-60%;pointer-events:none;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.45),transparent);
+  transform:skewX(-20deg);
+}
+.primary-btn:hover::after{animation:g-shine .9s ease}
+.primary-btn.pi-danger{background:linear-gradient(110deg,#e1242c,#f2545b);box-shadow:0 8px 22px rgba(225,36,44,.3)}
+.secondary-btn,.square-btn,.pi-icon-btn,.plain-icon{transition:transform .2s var(--g-ease),background .2s ease,box-shadow .2s ease}
+.secondary-btn:hover:not(:disabled),.square-btn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(20,50,90,.1)}
+.today-btn:hover{transform:translateY(-1px);background:var(--g-fill-strong)}
+.filters button,.pi-presets button,.goal-filters button,.period-switch button{transition:background .25s ease,color .25s ease,transform .2s var(--g-ease),box-shadow .25s ease}
+.filters button:hover,.pi-presets button:hover:not(:disabled){transform:translateY(-1px)}
+.filters button.active,.pi-presets button.active{box-shadow:0 6px 16px rgba(7,134,92,.3)}
+.period-switch,.goal-filters{
+  background:var(--g-fill);
+  -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+  border:1px solid var(--g-stroke);
+}
+.period-switch button.selected,.goal-filters button.selected{box-shadow:0 4px 14px rgba(7,134,92,.2)}
+
+/* check boxes, badges */
+.check{transition:transform .2s var(--g-ease),background .2s ease,box-shadow .2s ease}
+.check:hover:not(:disabled){transform:scale(1.15)}
+.check.checked{animation:g-pop-small .3s var(--g-ease);box-shadow:0 4px 12px rgba(7,134,92,.35)}
+.badge{transition:transform .2s var(--g-ease)}
+.task-table tr:hover .badge{transform:scale(1.05)}
+
+/* ---------- progress bars ---------- */
+.progress-track{
+  background:rgba(120,140,170,.18);
+  box-shadow:inset 0 1px 3px rgba(20,50,90,.12);
+  position:relative;
+}
+.progress-track>span{
+  position:relative;overflow:hidden;
+  transform-origin:left center;
+  animation:g-grow 1.1s var(--g-ease) both;
+  box-shadow:0 0 12px rgba(36,184,133,.55);
+}
+.progress-track>span::after{
+  content:"";position:absolute;inset:0;
+  background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);
+  transform:translateX(-100%);animation:g-bar-shine 2.8s ease-in-out 1.2s infinite;
+}
+
+/* ---------- page + content entrance ---------- */
+.content{animation:g-page .5s var(--g-ease) both}
+.content>*{animation:g-rise .6s var(--g-ease) both}
+.content>*:nth-child(1){animation-delay:.02s}
+.content>*:nth-child(2){animation-delay:.08s}
+.content>*:nth-child(3){animation-delay:.14s}
+.content>*:nth-child(4){animation-delay:.20s}
+.content>*:nth-child(5){animation-delay:.26s}
+.content>*:nth-child(n+6){animation-delay:.32s}
+.metrics>*,.goal-list>*,.goal-mini-grid>*,.chart-grid>*{animation:g-rise .6s var(--g-ease) both}
+.metrics>*:nth-child(1),.chart-grid>*:nth-child(1),.goal-list>*:nth-child(1),.goal-mini-grid>*:nth-child(1){animation-delay:.10s}
+.metrics>*:nth-child(2),.chart-grid>*:nth-child(2),.goal-list>*:nth-child(2),.goal-mini-grid>*:nth-child(2){animation-delay:.18s}
+.metrics>*:nth-child(3),.chart-grid>*:nth-child(3),.goal-list>*:nth-child(3),.goal-mini-grid>*:nth-child(3){animation-delay:.26s}
+.metrics>*:nth-child(4),.goal-list>*:nth-child(4),.goal-mini-grid>*:nth-child(4){animation-delay:.34s}
+.goal-list>*:nth-child(n+5){animation-delay:.42s}
+.task-table tbody tr{animation:g-fade-row .45s var(--g-ease) both}
+.task-table tbody tr:nth-child(2){animation-delay:.05s}
+.task-table tbody tr:nth-child(3){animation-delay:.10s}
+.task-table tbody tr:nth-child(4){animation-delay:.15s}
+.task-table tbody tr:nth-child(5){animation-delay:.20s}
+.task-table tbody tr:nth-child(n+6){animation-delay:.25s}
+
+/* live elements */
+.icon-button i{animation:g-ping 2s ease-out infinite}
+.sun-emoji{display:inline-block;animation:g-spin-slow 14s linear infinite}
+.event{transition:transform .25s var(--g-ease),box-shadow .25s ease}
+.event:hover{transform:translateX(3px) scale(1.01);box-shadow:0 6px 16px rgba(20,50,90,.15);z-index:2}
+.pi-ring svg circle:last-child{transition:stroke-dashoffset .6s linear;filter:drop-shadow(0 0 8px rgba(7,134,92,.55))}
+.pi-ring-label strong{background:linear-gradient(120deg,#07865c,#3b82f6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.pi-timer-card .pi-ring{animation:g-breathe 4s ease-in-out infinite}
+.mountains{animation:g-sway 8s ease-in-out infinite}
+.quote-card,.goal-quote{
+  background:linear-gradient(140deg,rgba(7,134,92,.18),rgba(59,130,246,.12));
+  border:1px solid var(--g-stroke);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+}
+.pi-skeleton{background:linear-gradient(90deg,var(--g-fill-soft),var(--g-fill-strong),var(--g-fill-soft));background-size:200% 100%}
+.pi-alert{-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:g-drop .3s var(--g-ease) both}
+.auth-page{background:transparent}
+.auth-card{animation:g-pop .6s var(--g-ease) both}
+.auth-brand-icon{animation:g-breathe 4s ease-in-out infinite}
+
+/* scrollbars */
+*{scrollbar-width:thin;scrollbar-color:rgba(7,134,92,.4) transparent}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:rgba(7,134,92,.35);border-radius:9px}
+::-webkit-scrollbar-thumb:hover{background:rgba(7,134,92,.6)}
+::selection{background:rgba(7,134,92,.25)}
+
+/* ---------- keyframes ---------- */
+@keyframes g-fade{from{opacity:0}to{opacity:1}}
+@keyframes g-page{from{opacity:0}to{opacity:1}}
+@keyframes g-rise{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes g-fade-row{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+@keyframes g-pop{from{opacity:0;transform:translateY(14px) scale(.94)}to{opacity:1;transform:none}}
+@keyframes g-pop-small{0%{transform:scale(.6)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+@keyframes g-drop{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:none}}
+@keyframes g-grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes g-shine{to{left:130%}}
+@keyframes g-bar-shine{60%,100%{transform:translateX(100%)}}
+@keyframes g-ping{0%{box-shadow:0 0 0 0 rgba(243,76,84,.6)}80%,100%{box-shadow:0 0 0 8px rgba(243,76,84,0)}}
+@keyframes g-sway{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(-2deg) translateY(-2px)}}
+@keyframes g-spin-slow{to{transform:rotate(360deg)}}
+@keyframes g-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
+
+/* ---------- accessibility / fallbacks ---------- */
+@media (prefers-reduced-motion:reduce){
+  .app::before,.app::after,.main-shell::before,
+  .content,.content>*,.metrics>*,.goal-list>*,.goal-mini-grid>*,.chart-grid>*,
+  .task-table tbody tr,.progress-track>span,.progress-track>span::after,
+  .brand-mark,.sun-emoji,.mountains,.icon-button i,.pi-timer-card .pi-ring,
+  .modal,.modal-backdrop,.pi-dropdown,.auth-card,.auth-brand-icon,.pi-alert{animation:none!important}
+  .metric:hover,.goal-card:hover,.goal-mini:hover,.nav-item:hover,.primary-btn:hover{transform:none!important}
+  .metric::after,.goal-card::after,.goal-mini::after,.primary-btn::after{display:none}
+}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .app{--g-fill:rgba(255,255,255,.92);--g-fill-strong:#fff}
+  .app.theme-dark{--g-fill:rgba(22,34,48,.96);--g-fill-strong:#1a2838}
+}
+@media (max-width:640px){
+  .app{--g-blur:12px}
+  .app::before,.app::after,.main-shell::before{filter:blur(50px)}
+  .metric:hover,.goal-card:hover{transform:none}
+}
+
+/* =========================================================
+   Fix pass: fixed sidebar, solid pop-over panels, themed selects/tooltips
+   ========================================================= */
+.app{
+  --g-pop-bg:rgba(255,255,255,.985);
+  --g-pop-border:rgba(15,40,80,.12);
+  --g-pop-shadow:0 22px 60px rgba(15,40,80,.22),0 4px 14px rgba(15,40,80,.08);
+  --g-pop-hover:rgba(7,134,92,.10);
+}
+.app.theme-dark{
+  --g-pop-bg:rgba(18,29,42,.985);
+  --g-pop-border:rgba(255,255,255,.13);
+  --g-pop-shadow:0 22px 60px rgba(0,0,0,.6),0 4px 14px rgba(0,0,0,.35);
+  --g-pop-hover:rgba(36,184,133,.16);
+}
+
+/* 1. Sidebar stays pinned to the viewport and never scrolls with the page */
+.sidebar{
+  position:sticky;top:0;align-self:flex-start;
+  height:100vh;min-height:0;max-height:100vh;
+  overflow-x:hidden;overflow-y:auto;
+  scrollbar-width:none;-ms-overflow-style:none;
+}
+.sidebar::-webkit-scrollbar{display:none}
+
+/* 3. Notification dropdown, menus and dialogs are (nearly) opaque */
+.pi-dropdown{
+  background:var(--g-pop-bg);
+  border:1px solid var(--g-pop-border);
+  box-shadow:var(--g-pop-shadow);
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+  z-index:60;
+}
+.pi-note:hover,.pi-dropdown-small button:hover{background:var(--g-pop-hover)}
+.modal,.auth-card{
+  background:var(--g-pop-bg);
+  border:1px solid var(--g-pop-border);
+  box-shadow:var(--g-pop-shadow);
+}
+
+/* 2a. Custom select (replaces the plain native option list) */
+.pi-select-btn{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;height:40px;min-width:0;padding:0 12px;
+  border:1px solid var(--border);border-radius:9px;
+  background:var(--g-fill-soft);color:var(--text);
+  font:inherit;font-size:13px;text-align:left;cursor:pointer;
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+  transition:border-color .2s ease,box-shadow .2s ease,background .2s ease;
+}
+.pi-select-btn span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pi-select-btn svg{flex-shrink:0;color:var(--muted);transition:transform .25s var(--g-ease)}
+.pi-select-btn:hover:not(:disabled){border-color:#50b99a}
+.pi-select-btn.open,.pi-select-btn:focus-visible{
+  border-color:#07865c;box-shadow:0 0 0 4px rgba(7,134,92,.15);outline:none;
+  background:var(--g-fill-strong);
+}
+.pi-select-btn.open svg{transform:rotate(180deg);color:#07865c}
+.pi-select-btn:disabled{opacity:.55;cursor:not-allowed}
+.pi-select-inline .pi-select-btn{border:0;background:transparent;box-shadow:none;height:38px;width:auto;min-width:130px;font-weight:600;padding:0 4px 0 6px;-webkit-backdrop-filter:none;backdrop-filter:none}
+
+.pi-select-list{
+  position:fixed;z-index:1000;margin:0;padding:6px;list-style:none;
+  max-height:280px;overflow:auto;
+  background:var(--g-pop-bg);
+  border:1px solid var(--g-pop-border);border-radius:12px;
+  box-shadow:var(--g-pop-shadow);
+  animation:g-drop .18s var(--g-ease) both;
+}
+.pi-select-option{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 10px;border-radius:8px;
+  color:var(--text);font-size:13px;cursor:pointer;
+  transition:background .15s ease,color .15s ease,transform .15s ease;
+}
+.pi-select-option[data-active="true"]{background:var(--g-pop-hover);transform:translateX(2px)}
+.pi-select-option.selected{color:#07865c;font-weight:700}
+.theme-dark .pi-select-option.selected{color:#4fd8a6}
+.pi-select-option[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+
+/* 2b. Chart hover tooltips (Recharts) */
+.app .recharts-default-tooltip{
+  background:var(--g-pop-bg)!important;
+  border:1px solid var(--g-pop-border)!important;
+  border-radius:12px!important;
+  box-shadow:var(--g-pop-shadow)!important;
+  padding:10px 14px!important;
+  min-width:120px;
+}
+.app .recharts-tooltip-label{
+  margin:0 0 6px!important;
+  color:var(--text)!important;
+  font-family:Manrope,sans-serif;font-weight:800!important;font-size:13px!important;
+}
+.app .recharts-tooltip-item-list{margin:0;padding:0}
+.app .recharts-tooltip-item{
+  padding:2px 0!important;font-size:12px!important;font-weight:600;
+}
+.app .recharts-tooltip-item-name,.app .recharts-tooltip-item-separator{color:var(--muted)!important}
+.app .recharts-tooltip-item-value,.app .recharts-tooltip-item-unit{color:var(--text)!important;font-weight:800}
+.app .recharts-tooltip-cursor{fill:rgba(7,134,92,.08);stroke:rgba(7,134,92,.35)}
+.app .recharts-tooltip-wrapper{transition:transform .12s ease-out;z-index:5}
+.app .recharts-active-dot circle{filter:drop-shadow(0 0 6px rgba(7,134,92,.7))}
+
+/* =========================================================
+   Round 3: fixed footer, clean search, themed pickers, planner layout
+   ========================================================= */
+
+/* 1. Footer stays at the bottom of the window */
+.footer{position:sticky;bottom:0;z-index:15;margin-top:auto}
+
+/* 4. One clean search field (no inner box, no shortcut hint) */
+.global-search{
+  height:42px;width:min(380px,48vw);
+  border-radius:999px;padding:0 8px 0 16px;gap:10px;
+  transition:border-color .2s ease,box-shadow .25s ease,background .2s ease,width .3s var(--g-ease);
+}
+.global-search>svg{flex-shrink:0;color:var(--muted);transition:color .2s ease}
+.global-search:focus-within{
+  border-color:#07865c;background:var(--g-fill-strong);
+  box-shadow:0 0 0 4px rgba(7,134,92,.14),0 8px 22px rgba(7,134,92,.10);
+}
+.global-search:focus-within>svg{color:#07865c}
+.global-search .pi-search-input,
+.global-search .pi-search-input:focus,
+.global-search .pi-search-input:focus-visible{
+  flex:1;min-width:0;height:100%;padding:0;margin:0;
+  border:0!important;outline:0!important;box-shadow:none!important;
+  background:transparent!important;border-radius:0;
+  color:var(--text);font-size:13px;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}
+.global-search .pi-search-input::placeholder{color:var(--muted);opacity:.85}
+.global-search .pi-icon-btn{flex-shrink:0;width:28px;height:28px;border-radius:50%;padding:0}
+.global-search kbd{display:none}
+@media (max-width:640px){.global-search{width:auto;flex:1;height:38px}}
+
+/* 2. Themed date / time pickers */
+.pi-picker-btn{min-width:150px}
+.pi-picker-btn svg{color:var(--muted)}
+.pi-picker-btn.open svg{transform:none;color:#07865c}
+.pi-placeholder{color:var(--muted);opacity:.75}
+.pi-float{
+  position:fixed;z-index:1000;padding:12px;
+  background:var(--g-pop-bg);
+  border:1px solid var(--g-pop-border);border-radius:14px;
+  box-shadow:var(--g-pop-shadow);
+  animation:g-drop .18s var(--g-ease) both;
+}
+.pi-dp-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:var(--text);font-family:Manrope,sans-serif;font-size:14px}
+.pi-dp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.pi-dp-week{font-size:10px;font-weight:700;color:var(--muted);text-align:center;padding:4px 0;text-transform:uppercase;letter-spacing:.04em}
+.pi-dp-day{
+  height:34px;border:0;border-radius:10px;background:transparent;color:var(--text);
+  font-size:12px;font-weight:600;cursor:pointer;
+  transition:background .15s ease,transform .15s var(--g-ease),color .15s ease;
+}
+.pi-dp-day:hover:not(:disabled){background:var(--g-pop-hover);transform:scale(1.08)}
+.pi-dp-day.faded{color:var(--muted);opacity:.5}
+.pi-dp-day.today{box-shadow:inset 0 0 0 1.5px #07865c;color:#07865c}
+.pi-dp-day.selected{background:linear-gradient(135deg,#07865c,#10a874);color:#fff;box-shadow:0 6px 14px rgba(7,134,92,.35)}
+.pi-dp-day:disabled{opacity:.25;cursor:not-allowed}
+.pi-dp-day:focus-visible,.pi-tp-col button:focus-visible{outline:2px solid #50b99a;outline-offset:1px}
+.pi-dp-foot{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--g-pop-border)}
+.pi-dp-foot button{border:0;background:transparent;color:#07865c;font-weight:700;font-size:12px;padding:6px 10px;border-radius:8px;cursor:pointer}
+.pi-dp-foot button:hover:not(:disabled){background:var(--g-pop-hover)}
+.pi-dp-foot button:disabled{opacity:.4;cursor:not-allowed}
+.pi-dp-foot .pi-done{background:#07865c;color:#fff}
+.pi-dp-foot .pi-done:hover{background:#06704d!important}
+.pi-tp-cols{display:flex;gap:8px}
+.pi-tp-col{flex:1;display:flex;flex-direction:column;gap:2px;max-height:220px;overflow-y:auto;padding-right:2px}
+.pi-tp-title{position:sticky;top:0;background:var(--g-pop-bg);z-index:1;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;text-align:center;padding:2px 0 6px}
+.pi-tp-col button{border:0;background:transparent;color:var(--text);height:32px;border-radius:8px;font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer;flex-shrink:0;transition:background .15s ease}
+.pi-tp-col button:hover{background:var(--g-pop-hover)}
+.pi-tp-col button.selected{background:linear-gradient(135deg,#07865c,#10a874);color:#fff;box-shadow:0 4px 10px rgba(7,134,92,.3)}
+
+/* 3. Planner layout without the day schedule */
+.planner-aside{position:sticky;top:80px;align-self:start}
+.pi-overview{padding:16px}
+.pi-overview .panel-heading{margin-bottom:12px}
+.pi-overview .panel-heading small{color:#07865c;font-weight:700}
+.pi-overview-line{display:flex;align-items:center;gap:8px;margin:12px 0 0;font-size:13px;color:var(--muted)}
+.pi-overview-line svg{color:#07865c}
+.pi-overview-next{margin-top:16px;padding:12px;border-radius:12px;background:var(--g-fill-soft);border:1px solid var(--g-border);display:flex;flex-direction:column;gap:3px}
+.pi-overview-next small{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.pi-overview-next b{font-size:14px;color:var(--text)}
+.pi-overview-next span{font-size:12px;color:var(--muted)}
+.pi-overview-cats{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.pi-overview-cats span{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);padding:4px 9px;border-radius:999px;background:var(--g-fill-soft);border:1px solid var(--g-border)}
+.pi-overview-cats i{width:8px;height:8px;border-radius:50%}
+.pi-overview-cats b{color:var(--text)}
+@media (max-width:980px){.planner-aside{position:static}}
+.footer{background:var(--g-fill-strong)}
+
+/* Quick Add Task: clean responsive layout
+   row 1: title (full width) | row 2: five equal fields | row 3: button (right) */
+.quick-add .pi-quick-form{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:14px 12px;align-items:end;
+}
+.quick-add .pi-quick-form .pi-q-title{grid-column:1/-1}
+.quick-add .pi-quick-form .pi-q-title input{height:44px}
+.quick-add .pi-quick-form .field{min-width:0}
+.quick-add .pi-quick-form .pi-picker-btn,
+.quick-add .pi-quick-form .pi-select-btn{min-width:0;width:100%}
+.quick-add .pi-quick-form .pi-q-submit{
+  grid-column:1/-1;justify-self:end;
+  width:auto;min-width:160px;height:44px;padding:0 28px;
+}
+.quick-add .quick-heading{margin-bottom:16px}
+@media (max-width:640px){
+  .quick-add .pi-quick-form .pi-q-submit{justify-self:stretch;width:100%}
+}
+
+/* =========================================================
+   Analytics page: styles for classes the page uses
+   (.primary-button, .secondary-button, .feedback-message.error)
+   ========================================================= */
+.primary-button,.secondary-button{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  height:40px;padding:0 20px;border-radius:10px;
+  font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;
+  position:relative;overflow:hidden;
+  transition:transform .25s var(--g-ease),box-shadow .3s ease,background .2s ease,filter .2s ease;
+}
+.primary-button{
+  border:0;color:#fff;
+  background:linear-gradient(110deg,#07865c,#10a874 55%,#07865c);background-size:200% 100%;
+  box-shadow:0 8px 22px rgba(7,134,92,.30);
+}
+.primary-button:hover:not(:disabled){transform:translateY(-2px);background-position:100% 0;box-shadow:0 12px 28px rgba(7,134,92,.42)}
+.primary-button:active:not(:disabled){transform:scale(.97)}
+.secondary-button{
+  border:1px solid var(--border);color:var(--text);
+  background:var(--g-fill-soft);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+}
+.secondary-button:hover:not(:disabled){transform:translateY(-1px);border-color:#50b99a;box-shadow:0 6px 16px rgba(20,50,90,.10)}
+.primary-button:disabled,.secondary-button:disabled{opacity:.55;cursor:not-allowed;box-shadow:none}
+.primary-button svg{flex-shrink:0}
+
+.feedback-message{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;
+}
+.feedback-message.error{background:#ffe8e8;color:#b4161d;border:1px solid rgba(225,36,44,.25)}
+.theme-dark .feedback-message.error{background:#3a1d22;color:#ff9aa0;border-color:rgba(255,154,160,.25)}
+
+/* filter bar */
+label[for^="analytics-"]{font-size:12px;font-weight:600;color:var(--muted)}
+label[for^="analytics-"]+.pi-picker-btn{min-width:170px}
+.page-title .primary-button{align-self:flex-start}
+
+/* two-panel chart rows fill the width instead of leaving a gap */
+.chart-grid:has(>.chart-panel:nth-child(2):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (max-width:980px){.chart-grid:has(>.chart-panel:nth-child(2):last-child){grid-template-columns:1fr}}
+
+
+/* =========================================================
+   Round 4: full-screen blur behind dialogs + goal menu fix
+   ========================================================= */
+.modal-backdrop{
+  z-index:500;                          /* above sidebar, top bar and footer */
+  background:rgba(12,28,52,.34);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  backdrop-filter:blur(18px) saturate(140%);
+}
+.theme-dark .modal-backdrop{background:rgba(2,8,18,.55)}
+
+/* the card that owns an open menu must sit above the cards after it */
+.goal-card:has(.pi-dropdown),.goal-mini:has(.pi-dropdown){z-index:40}
+.goal-card .pi-dropdown{z-index:60;width:200px}
+.goal-meta .pi-menu-wrap{position:relative}
+
+/* Charts: no black focus box when a chart is clicked.
+   (Recharts 3 makes each chart focusable for accessibility; the browser then
+   draws its default outline. Keyboard users still get the tooltip/arrow keys.) */
+.recharts-wrapper,
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-wrapper *:focus,
+.recharts-wrapper *:focus-visible,
+.recharts-surface,
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+.chart:focus,.chart:focus-visible,
+.pie:focus,.pie:focus-visible{
+  outline:none!important;
+  box-shadow:none!important;
+}
