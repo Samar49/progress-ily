@@ -5,9 +5,11 @@ const TOKEN_KEY = "progressily_token";
 const USER_KEY = "progressily_user";
 
 const api = axios.create({
+  // VITE_API_URL must be set when building for production. The "/api" fallback
+  // only works when the API is served from the same domain (reverse proxy).
   baseURL:
-  import.meta.env.VITE_API_URL ||
-  (import.meta.env.DEV ? "http://localhost:5000/api" : ""),
+    import.meta.env.VITE_API_URL ||
+    (import.meta.env.DEV ? "http://localhost:5000/api" : "/api"),
   timeout: 20000,
 });
 
