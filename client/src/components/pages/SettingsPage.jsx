@@ -114,6 +114,7 @@ export default function SettingsPage({ user, onUserChange, theme, setTheme, onAc
             <Select value={theme} onChange={(event) => setTheme(event.target.value)}>
               <option value="light">Light</option>
               <option value="dark">Dark</option>
+              <option value="system">System (match device)</option>
             </Select>
           </label>
           <div><button type="submit" className="primary-btn" disabled={savingProfile}>{savingProfile ? "Saving..." : "Save changes"}</button></div>

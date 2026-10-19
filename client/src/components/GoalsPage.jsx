@@ -93,7 +93,7 @@ function captionFor(goal) {
 
 function Donut({ data, center, label }) {
   const total = data.reduce((sum, entry) => sum + entry.value, 0);
-  const chartData = total ? data : [{ name: "none", value: 1, color: "#e5ebf1" }];
+  const chartData = total ? data : [{ name: "none", value: 1, color: "var(--border)" }];
   return (
     <div className="pie goal-pie" role="img" aria-label={label}>
       <ResponsiveContainer width="100%" height="100%">

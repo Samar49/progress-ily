@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 
-export const NAV_ITEMS = [
+const NAV_ITEMS = [
   { label: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
   { label: "Daily Planner", path: "/planner", icon: CalendarDays },
   { label: "Goals", path: "/goals", icon: Target },

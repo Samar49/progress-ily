@@ -20,6 +20,23 @@
 
     <title>Progress.ily — Your Personal Productivity Space</title>
 
+    <!-- Apply the saved / device theme before React loads, so dark mode never flashes white. -->
+    <script>
+      (function () {
+        var saved = null;
+        try {
+          saved = JSON.parse(localStorage.getItem("progressily_theme"));
+        } catch (e) {} // unreadable value: treat as "no saved theme"
+        try {
+          var dark =
+            saved === "dark" ||
+            (saved !== "light" && window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.style.colorScheme = dark ? "dark" : "light";
+          document.documentElement.style.background = dark ? "#0e1722" : "#fff";
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- App favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 

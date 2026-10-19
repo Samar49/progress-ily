@@ -11,7 +11,7 @@ import GoalsPage from "./components/GoalsPage.jsx";
 import { Skeleton } from "./components/common/Feedback.jsx";
 
 import { getStoredUser, signOut } from "./api.js";
-import { TaskDialogContext, useLocalStorageState } from "./hooks.js";
+import { TaskDialogContext, useTheme } from "./hooks.js";
 
 import "./styles.css";
 import "./extra.css";
@@ -43,7 +43,7 @@ function NotFound() {
 export default function App() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [theme, setTheme] = useLocalStorageState("progressily_theme", "light");
+  const { theme, preference, setPreference } = useTheme();
   const [searchTerm, setSearchTerm] = useState("");
   const [user, setUser] = useState(() => getStoredUser());
   const [dialog, setDialog] = useState(null); // { task, defaults }
@@ -51,19 +51,27 @@ export default function App() {
   const [version, setVersion] = useState(0);
 
   useEffect(() => {
+    const background = theme === "dark" ? "#0e1722" : "#fff";
     document.documentElement.style.colorScheme = theme;
-    document.body.style.background = theme === "dark" ? "#0e1722" : "#fff";
+    document.documentElement.style.background = background;
+    document.body.style.background = background;
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute("content", theme === "dark" ? "#0e1722" : "#f7f9f7");
   }, [theme]);
 
-  // A search typed on one page must not silently hide data on the next.
-  useEffect(() => {
+  // When the page changes, reset page-level UI during render (React's recommended
+  // way to adjust state on a change, instead of setState inside an effect):
+  // a search typed on one page must not silently hide data on the next, and the
+  // mobile menu should close after navigating.
+  const [lastPath, setLastPath] = useState(location.pathname);
+  if (lastPath !== location.pathname) {
+    setLastPath(location.pathname);
     setSearchTerm("");
-  }, [location.pathname]);
-
-  // Close the mobile menu after navigating, on Escape, and lock page scroll while open.
-  useEffect(() => {
     setNavOpen(false);
-  }, [location.pathname]);
+  }
+
+  // Close the mobile menu on Escape and lock page scroll while it is open.
 
   useEffect(() => {
     if (!navOpen) return undefined;
@@ -115,7 +123,7 @@ export default function App() {
   if (!user) {
     return (
       <div className={`app theme-${theme}`}>
-        <AuthPage onAuthenticated={handleAuthenticated} />
+        <AuthPage onAuthenticated={handleAuthenticated} theme={theme} setTheme={setPreference} />
       </div>
     );
   }
@@ -130,7 +138,7 @@ export default function App() {
         <div className={`pi-nav-overlay ${navOpen ? "show" : ""}`} onClick={() => setNavOpen(false)} aria-hidden="true" />
 
         <div className="main-shell" id="main">
-          <Header onMenu={() => setNavOpen(true)} theme={theme} setTheme={setTheme} user={user} onSearch={setSearchTerm} searchValue={searchTerm} refreshKey={version} />
+          <Header onMenu={() => setNavOpen(true)} theme={theme} setTheme={setPreference} user={user} onSearch={setSearchTerm} searchValue={searchTerm} refreshKey={version} />
 
           <Suspense
             fallback={
@@ -153,8 +161,8 @@ export default function App() {
                   <SettingsPage
                     user={user}
                     onUserChange={setUser}
-                    theme={theme}
-                    setTheme={setTheme}
+                    theme={preference}
+                    setTheme={setPreference}
                     onAccountDeleted={handleLogout}
                   />
                 }

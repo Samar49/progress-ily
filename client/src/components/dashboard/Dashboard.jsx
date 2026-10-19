@@ -296,7 +296,7 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
                     <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "var(--muted)" }} />
                     <Tooltip cursor={{ fill: "rgba(7,134,92,.06)" }} />
                     <Bar dataKey="completed" name="Completed" stackId="a" fill="#07865c" radius={[0, 0, 0, 0]} />
-                    <Bar dataKey="pending" name="Pending" stackId="a" fill="#dfe5e9" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="pending" name="Pending" stackId="a" fill="var(--border)" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>

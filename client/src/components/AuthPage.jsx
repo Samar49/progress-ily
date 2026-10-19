@@ -6,8 +6,10 @@ import {
   EyeOff,
   LockKeyhole,
   Mail,
+  Moon,
   ShieldCheck,
   Sprout,
+  Sun,
   Timer,
   TrendingUp,
   UserRound,
@@ -15,7 +17,6 @@ import {
 
 import { signIn, signUp } from "../api.js";
 import "../styles.css";
-import "../auth.css";
 
 const FEATURES = [
   {
@@ -48,7 +49,7 @@ function getErrorMessage(error) {
   );
 }
 
-export default function AuthPage({ onAuthenticated }) {
+export default function AuthPage({ onAuthenticated, theme, setTheme }) {
   const [mode, setMode] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -128,6 +129,22 @@ export default function AuthPage({ onAuthenticated }) {
 
   return (
     <main className="ax-shell">
+      {theme && setTheme && (
+        <button
+          type="button"
+          className={`theme-toggle ax-theme pi-theme-${theme}`}
+          onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+          aria-label={`Switch to ${theme === "light" ? "dark" : "light"} mode`}
+          title={`Current: ${theme} mode`}
+        >
+          <Sun size={16} className="pi-theme-icon pi-sun" />
+          <span className="toggle" style={{ justifyContent: theme === "light" ? "flex-start" : "flex-end" }}>
+            <i />
+          </span>
+          <Moon size={16} className="pi-theme-icon pi-moon" />
+        </button>
+      )}
+
       <section className="ax-hero" aria-label="About Progress.ily">
         <div className="ax-hero-content">
           <div className="ax-logo">
