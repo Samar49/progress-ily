@@ -1,8 +1,5 @@
 /* =========================================================
-   Progress.ily - mobile & tablet layout
-   Loaded LAST (after styles.css, extra.css, glass.css).
-   <= 980px : sidebar becomes a slide-in drawer (hamburger in the top bar)
-   <= 640px : single-column pages, task tables become cards, bigger touch targets
+
    ========================================================= */
 
 /* desktop: hide mobile-only controls */

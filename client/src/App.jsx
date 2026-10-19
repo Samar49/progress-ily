@@ -16,7 +16,7 @@ import { TaskDialogContext, useTheme } from "./hooks.js";
 import "./styles.css";
 import "./extra.css";
 import "./glass.css";
-import "./Responsive.css";
+import "./responsive.css";
 
 // Less-used pages are loaded on demand to keep the first bundle small.
 const AnalyticsPage = lazy(() => import("./components/AnalyticsPage.jsx"));
