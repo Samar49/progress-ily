@@ -11,12 +11,13 @@ import GoalsPage from "./components/GoalsPage.jsx";
 import { Skeleton } from "./components/common/Feedback.jsx";
 
 import { getStoredUser, signOut } from "./api.js";
-import { TaskDialogContext, useTheme } from "./hooks.js";
+import { TaskDialogContext, useScrollLock, useTheme } from "./hooks.js";
 
 import "./styles.css";
 import "./extra.css";
 import "./glass.css";
 import "./responsive.css";
+import "./polish.css";
 
 // Less-used pages are loaded on demand to keep the first bundle small.
 const AnalyticsPage = lazy(() => import("./components/AnalyticsPage.jsx"));
@@ -77,12 +78,9 @@ export default function App() {
     if (!navOpen) return undefined;
     const onKey = (event) => event.key === "Escape" && setNavOpen(false);
     document.addEventListener("keydown", onKey);
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-    };
+    return () => document.removeEventListener("keydown", onKey);
   }, [navOpen]);
+  useScrollLock(navOpen);
 
   const clearSearch = useCallback(() => setSearchTerm(""), []);
 

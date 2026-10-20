@@ -2,11 +2,14 @@ import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
+import { useScrollLock } from "../../hooks.js";
+
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
 export default function Modal({ title, subtitle, onClose, children, width = 480, labelledBy = "modal-title" }) {
   const ref = useRef(null);
+  useScrollLock(true); // the page behind the dialog must not scroll
   // Keep the latest onClose without re-running the focus effect below.
   // (Parents pass a new function on every render, which used to re-focus the
   // first field after each keystroke.)

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useState } from "react";
 
 // Lets any page open the shared "add / edit task" dialog.
 export const TaskDialogContext = createContext({
@@ -61,4 +61,30 @@ export function useLocalStorageState(key, initial) {
   }, [key, value]);
 
   return [value, setValue];
+}
+
+// Locks page scroll while an overlay (dialog, mobile drawer) is open.
+// A shared counter means stacked overlays (e.g. a confirm dialog on top of a
+// form) only unlock the page once the last one closes. The scrollbar width is
+// reserved as padding so the page doesn't jump sideways when it disappears.
+let scrollLocks = 0;
+
+export function useScrollLock(locked = true) {
+  useLayoutEffect(() => {
+    if (!locked) return undefined;
+    const root = document.documentElement;
+    if (scrollLocks === 0) {
+      const gap = window.innerWidth - root.clientWidth;
+      root.style.setProperty("--pi-scrollbar-gap", `${Math.max(gap, 0)}px`);
+      root.classList.add("pi-scroll-locked");
+    }
+    scrollLocks += 1;
+    return () => {
+      scrollLocks -= 1;
+      if (scrollLocks === 0) {
+        root.classList.remove("pi-scroll-locked");
+        root.style.removeProperty("--pi-scrollbar-gap");
+      }
+    };
+  }, [locked]);
 }
