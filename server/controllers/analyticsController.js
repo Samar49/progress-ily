@@ -16,10 +16,7 @@ function parseDate(value, field) {
     return { valid: true, date: null };
   }
 
-  if (
-    typeof value !== "string" ||
-    !/^\d{4}-\d{2}-\d{2}$/.test(value)
-  ) {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
     return {
       valid: false,
       message: `${field} must use YYYY-MM-DD format.`,
@@ -28,10 +25,7 @@ function parseDate(value, field) {
 
   const date = new Date(`${value}T00:00:00.000Z`);
 
-  if (
-    Number.isNaN(date.getTime()) ||
-    date.toISOString().slice(0, 10) !== value
-  ) {
+  if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
     return {
       valid: false,
       message: `${field} is not a valid date.`,
@@ -111,9 +105,7 @@ const getAnalyticsSummary = async (req, res) => {
     }
 
     const [tasks, goals] = await Promise.all([
-      Task.find(taskFilter)
-        .select("date category priority status goalId")
-        .lean(),
+      Task.find(taskFilter).select("date category priority status goalId").lean(),
 
       Goal.find({ userId })
         .select("title targetDate status manualProgress progressMode targetValue currentValue")
@@ -122,18 +114,10 @@ const getAnalyticsSummary = async (req, res) => {
     ]);
 
     const total = tasks.length;
-    const completed = tasks.filter(
-      (task) => task.status === "Completed"
-    ).length;
-    const pending = tasks.filter(
-      (task) => task.status === "Pending"
-    ).length;
-    const inProgress = tasks.filter(
-      (task) => task.status === "In Progress"
-    ).length;
-    const highPriority = tasks.filter(
-      (task) => task.priority === "High"
-    ).length;
+    const completed = tasks.filter((task) => task.status === "Completed").length;
+    const pending = tasks.filter((task) => task.status === "Pending").length;
+    const inProgress = tasks.filter((task) => task.status === "In Progress").length;
+    const highPriority = tasks.filter((task) => task.priority === "High").length;
 
     const today = todayParam.date ? new Date(todayParam.date) : new Date();
     today.setUTCHours(0, 0, 0, 0);
@@ -187,11 +171,7 @@ const getAnalyticsSummary = async (req, res) => {
               total: { $sum: 1 },
               completed: {
                 $sum: {
-                  $cond: [
-                    { $eq: ["$status", "Completed"] },
-                    1,
-                    0,
-                  ],
+                  $cond: [{ $eq: ["$status", "Completed"] }, 1, 0],
                 },
               },
             },
@@ -199,44 +179,26 @@ const getAnalyticsSummary = async (req, res) => {
         ])
       : [];
 
-    const statsByGoal = new Map(
-      goalTaskStats.map((item) => [
-        String(item._id),
-        item,
-      ])
-    );
+    const statsByGoal = new Map(goalTaskStats.map((item) => [String(item._id), item]));
 
     const goalProgress = goals.map((goal) => ({
       id: String(goal._id),
       title: goal.title,
       status: goal.status,
       targetDate: goal.targetDate,
-      progress: computeGoalProgress(
-        goal,
-        statsByGoal.get(String(goal._id))
-      ),
+      progress: computeGoalProgress(goal, statsByGoal.get(String(goal._id))),
     }));
 
-    const activeGoals = goalProgress.filter(
-      (goal) => goal.status === "Active"
-    );
+    const activeGoals = goalProgress.filter((goal) => goal.status === "Active");
 
-    const completedGoals = goalProgress.filter(
-      (goal) => goal.status === "Completed"
-    );
+    const completedGoals = goalProgress.filter((goal) => goal.status === "Completed");
 
-    const onHoldGoals = goalProgress.filter(
-      (goal) => goal.status === "On Hold"
-    );
+    const onHoldGoals = goalProgress.filter((goal) => goal.status === "On Hold");
 
-    const notStartedGoals = goalProgress.filter(
-      (goal) => goal.status === "Not Started"
-    );
+    const notStartedGoals = goalProgress.filter((goal) => goal.status === "Not Started");
 
     const overdueGoals = activeGoals.filter(
-      (goal) =>
-        goal.targetDate &&
-        dateKey(goal.targetDate) < todayKey
+      (goal) => goal.targetDate && dateKey(goal.targetDate) < todayKey,
     );
 
     const dueSoonGoals = activeGoals.filter((goal) => {
@@ -246,20 +208,13 @@ const getAnalyticsSummary = async (req, res) => {
       target.setUTCHours(0, 0, 0, 0);
 
       const nextSevenDays = new Date(today);
-      nextSevenDays.setUTCDate(
-        nextSevenDays.getUTCDate() + 7
-      );
+      nextSevenDays.setUTCDate(nextSevenDays.getUTCDate() + 7);
 
       return target >= today && target <= nextSevenDays;
     });
 
     const averageActiveGoalProgress = activeGoals.length
-      ? Math.round(
-          activeGoals.reduce(
-            (sum, goal) => sum + goal.progress,
-            0
-          ) / activeGoals.length
-        )
+      ? Math.round(activeGoals.reduce((sum, goal) => sum + goal.progress, 0) / activeGoals.length)
       : 0;
 
     return res.status(200).json({
@@ -272,21 +227,13 @@ const getAnalyticsSummary = async (req, res) => {
           highPriority,
         },
 
-        completionRate: total
-          ? Math.round((completed / total) * 100)
-          : 0,
+        completionRate: total ? Math.round((completed / total) * 100) : 0,
 
         dailyTrend: [...trend.values()],
 
-        categoryBreakdown: createBreakdown(
-          tasks,
-          "category"
-        ),
+        categoryBreakdown: createBreakdown(tasks, "category"),
 
-        priorityBreakdown: createBreakdown(
-          tasks,
-          "priority"
-        ),
+        priorityBreakdown: createBreakdown(tasks, "priority"),
 
         goalCounts: {
           total: goals.length,
@@ -304,10 +251,7 @@ const getAnalyticsSummary = async (req, res) => {
         filters: {
           startDate: start.date ? dateKey(start.date) : null,
           endDate: end.date ? dateKey(end.date) : null,
-          taskScope:
-            start.date || end.date
-              ? "selectedDateRange"
-              : "allTasks",
+          taskScope: start.date || end.date ? "selectedDateRange" : "allTasks",
         },
       },
     });

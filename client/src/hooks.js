@@ -27,7 +27,7 @@ export function useTheme() {
   const [stored, setPreference] = useLocalStorageState(THEME_KEY, "system");
   const preference = THEME_CHOICES.includes(stored) ? stored : "system";
   const [systemIsDark, setSystemIsDark] = useState(
-    () => window.matchMedia?.(DARK_QUERY).matches ?? false
+    () => window.matchMedia?.(DARK_QUERY).matches ?? false,
   );
 
   // Follow the device live (e.g. Windows switching to dark at sunset).

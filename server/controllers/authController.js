@@ -10,6 +10,10 @@ const ApiError = require("../utils/ApiError");
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Compared against when the email is unknown, so a login attempt takes about
+// as long either way and does not reveal which emails are registered.
+const UNKNOWN_USER_HASH = "$2b$12$0uHoe/gZNQeVDpBt/psOb.WU83R6GByGX1GelqgivOQI3A1Hduiq6";
+
 const publicUser = (user) => ({
   id: user._id,
   name: user.name,
@@ -77,12 +81,7 @@ const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body || {};
 
-    if (
-      typeof email !== "string" ||
-      typeof password !== "string" ||
-      !email.trim() ||
-      !password
-    ) {
+    if (typeof email !== "string" || typeof password !== "string" || !email.trim() || !password) {
       throw new ApiError(400, "Email and password are required");
     }
 
@@ -90,8 +89,11 @@ const loginUser = async (req, res, next) => {
       email: email.trim().toLowerCase(),
     }).select("+password");
 
-    const valid = user && (await bcrypt.compare(password, user.password));
-    if (!valid) {
+    const passwordMatches = await bcrypt.compare(
+      password,
+      user ? user.password : UNKNOWN_USER_HASH,
+    );
+    if (!user || !passwordMatches) {
       throw new ApiError(401, "Invalid email or password");
     }
 

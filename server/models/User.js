@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema(
       defaultView: { type: String, enum: ["Day", "Week", "Month"], default: "Day" },
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 module.exports = mongoose.model("User", userSchema);

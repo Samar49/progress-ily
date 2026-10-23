@@ -77,7 +77,9 @@ export default function TaskTable({
                   <Badge tone={categoryTone(task.category)}>{task.category || "Personal"}</Badge>
                 </td>
                 <td>
-                  <Badge tone={(task.priority || "Medium").toLowerCase()}>{task.priority || "Medium"}</Badge>
+                  <Badge tone={(task.priority || "Medium").toLowerCase()}>
+                    {task.priority || "Medium"}
+                  </Badge>
                 </td>
                 <td>
                   <Badge>{task.status}</Badge>
@@ -85,7 +87,12 @@ export default function TaskTable({
                 {!compact && (
                   <td>
                     <div className="row-actions">
-                      <button type="button" onClick={() => onEdit?.(task)} disabled={busyId === task.id} aria-label={`Edit ${task.title}`}>
+                      <button
+                        type="button"
+                        onClick={() => onEdit?.(task)}
+                        disabled={busyId === task.id}
+                        aria-label={`Edit ${task.title}`}
+                      >
                         <Pencil size={16} />
                       </button>
                       <button

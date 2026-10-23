@@ -19,7 +19,10 @@ export default function MiniCalendar({ selected, onSelect }) {
     setView({ year: date.getFullYear(), month: date.getMonth() });
   }
 
-  const title = new Date(view.year, view.month, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  const title = new Date(view.year, view.month, 1).toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
   const today = toDateString();
 
   return (
@@ -27,10 +30,20 @@ export default function MiniCalendar({ selected, onSelect }) {
       <div className="panel-heading">
         <h3>{title}</h3>
         <div>
-          <button type="button" className="plain-icon" onClick={() => shift(-1)} aria-label="Previous month">
+          <button
+            type="button"
+            className="plain-icon"
+            onClick={() => shift(-1)}
+            aria-label="Previous month"
+          >
             <ChevronLeft size={17} />
           </button>
-          <button type="button" className="plain-icon" onClick={() => shift(1)} aria-label="Next month">
+          <button
+            type="button"
+            className="plain-icon"
+            onClick={() => shift(1)}
+            aria-label="Next month"
+          >
             <ChevronRight size={17} />
           </button>
         </div>
@@ -38,7 +51,9 @@ export default function MiniCalendar({ selected, onSelect }) {
 
       <div className="calendar-grid">
         {WEEKDAYS.map((day) => (
-          <span key={day} className="weekday">{day}</span>
+          <span key={day} className="weekday">
+            {day}
+          </span>
         ))}
         {monthGrid(view.year, view.month).map((cell) => (
           <button

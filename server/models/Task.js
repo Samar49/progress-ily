@@ -89,7 +89,7 @@ const taskSchema = new mongoose.Schema(
       default: null,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 taskSchema.pre("validate", function validateTask() {

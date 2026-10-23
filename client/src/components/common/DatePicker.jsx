@@ -1,10 +1,28 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
 
-import { WEEKDAYS, addDays, formatShort, fromDateString, monthGrid, toDateString } from "../../utils/date.js";
+import {
+  WEEKDAYS,
+  addDays,
+  formatShort,
+  fromDateString,
+  monthGrid,
+  toDateString,
+} from "../../utils/date.js";
 import FloatingPanel from "./FloatingPanel.jsx";
 
-export default function DatePicker({ name, value, onChange, min, max, clearable = false, disabled = false, id, placeholder = "Select date", "aria-label": ariaLabel }) {
+export default function DatePicker({
+  name,
+  value,
+  onChange,
+  min,
+  max,
+  clearable = false,
+  disabled = false,
+  id,
+  placeholder = "Select date",
+  "aria-label": ariaLabel,
+}) {
   const anchorRef = useRef(null);
   const gridRef = useRef(null);
   const [open, setOpen] = useState(false);
@@ -62,7 +80,10 @@ export default function DatePicker({ name, value, onChange, min, max, clearable 
     }
   }
 
-  const title = new Date(view.year, view.month, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  const title = new Date(view.year, view.month, 1).toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
 
   return (
     <>
@@ -83,19 +104,44 @@ export default function DatePicker({ name, value, onChange, min, max, clearable 
           }
         }}
       >
-        <span className={value ? "" : "pi-placeholder"}>{value ? formatShort(value) : placeholder}</span>
+        <span className={value ? "" : "pi-placeholder"}>
+          {value ? formatShort(value) : placeholder}
+        </span>
         <CalendarDays size={16} aria-hidden="true" />
       </button>
 
-      <FloatingPanel anchorRef={anchorRef} open={open} onClose={close} width={296} label="Choose a date" className="pi-datepanel">
+      <FloatingPanel
+        anchorRef={anchorRef}
+        open={open}
+        onClose={close}
+        width={296}
+        label="Choose a date"
+        className="pi-datepanel"
+      >
         <div className="pi-dp-head">
-          <button type="button" className="pi-icon-btn" onClick={() => shiftMonth(-1)} aria-label="Previous month"><ChevronLeft size={17} /></button>
+          <button
+            type="button"
+            className="pi-icon-btn"
+            onClick={() => shiftMonth(-1)}
+            aria-label="Previous month"
+          >
+            <ChevronLeft size={17} />
+          </button>
           <b>{title}</b>
-          <button type="button" className="pi-icon-btn" onClick={() => shiftMonth(1)} aria-label="Next month"><ChevronRight size={17} /></button>
+          <button
+            type="button"
+            className="pi-icon-btn"
+            onClick={() => shiftMonth(1)}
+            aria-label="Next month"
+          >
+            <ChevronRight size={17} />
+          </button>
         </div>
         <div className="pi-dp-grid" ref={gridRef} onKeyDown={onGridKey} role="grid">
           {WEEKDAYS.map((day) => (
-            <span key={day} className="pi-dp-week" role="columnheader">{day.slice(0, 2)}</span>
+            <span key={day} className="pi-dp-week" role="columnheader">
+              {day.slice(0, 2)}
+            </span>
           ))}
           {cells.map((cell) => (
             <button
@@ -115,9 +161,21 @@ export default function DatePicker({ name, value, onChange, min, max, clearable 
         </div>
         <div className="pi-dp-foot">
           {clearable && value ? (
-            <button type="button" onClick={() => { onChange?.({ target: { name, value: "" } }); setOpen(false); }}>Clear</button>
-          ) : <span />}
-          <button type="button" onClick={() => pick(today)} disabled={blocked(today)}>Today</button>
+            <button
+              type="button"
+              onClick={() => {
+                onChange?.({ target: { name, value: "" } });
+                setOpen(false);
+              }}
+            >
+              Clear
+            </button>
+          ) : (
+            <span />
+          )}
+          <button type="button" onClick={() => pick(today)} disabled={blocked(today)}>
+            Today
+          </button>
         </div>
       </FloatingPanel>
     </>

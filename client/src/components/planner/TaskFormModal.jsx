@@ -43,7 +43,9 @@ export default function TaskFormModal({ task, defaults, onClose, onSaved }) {
   const [error, setError] = useState("");
   // An older task may carry a category that is no longer offered (e.g. DSA);
   // keep it selectable so editing never silently changes it.
-  const categoryOptions = CATEGORIES.includes(form.category) ? CATEGORIES : [form.category, ...CATEGORIES];
+  const categoryOptions = CATEGORIES.includes(form.category)
+    ? CATEGORIES
+    : [form.category, ...CATEGORIES];
 
   useEffect(() => {
     let active = true;
@@ -167,7 +169,14 @@ export default function TaskFormModal({ task, defaults, onClose, onSaved }) {
 
         <label className="field">
           Notes
-          <textarea name="notes" rows={3} value={form.notes} onChange={update} maxLength={2000} placeholder="Add a short description" />
+          <textarea
+            name="notes"
+            rows={3}
+            value={form.notes}
+            onChange={update}
+            maxLength={2000}
+            placeholder="Add a short description"
+          />
         </label>
 
         <div className="modal-actions">

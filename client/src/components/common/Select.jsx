@@ -1,4 +1,13 @@
-import { Children, isValidElement, useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import {
+  Children,
+  isValidElement,
+  useCallback,
+  useEffect,
+  useId,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { createPortal } from "react-dom";
 import { Check, ChevronDown } from "lucide-react";
 
@@ -64,13 +73,14 @@ export default function Select({
       setOpen(false);
       buttonRef.current?.focus();
     },
-    [onChange, name]
+    [onChange, name],
   );
 
   useEffect(() => {
     if (!open) return undefined;
     function onDown(event) {
-      if (buttonRef.current?.contains(event.target) || listRef.current?.contains(event.target)) return;
+      if (buttonRef.current?.contains(event.target) || listRef.current?.contains(event.target))
+        return;
       setOpen(false);
     }
     function onScroll(event) {
@@ -88,7 +98,8 @@ export default function Select({
   }, [open, close]);
 
   useEffect(() => {
-    if (open) listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: "nearest" });
+    if (open)
+      listRef.current?.querySelector('[data-active="true"]')?.scrollIntoView({ block: "nearest" });
   }, [open, active]);
 
   function onKeyDown(event) {
@@ -123,12 +134,15 @@ export default function Select({
     } else if (key === "Tab") {
       close();
     } else if (key.length === 1) {
-      const index = options.findIndex((option) => option.label.toLowerCase().startsWith(key.toLowerCase()));
+      const index = options.findIndex((option) =>
+        option.label.toLowerCase().startsWith(key.toLowerCase()),
+      );
       if (index >= 0) setActive(index);
     }
   }
 
-  const host = typeof document !== "undefined" ? document.querySelector(".app") || document.body : null;
+  const host =
+    typeof document !== "undefined" ? document.querySelector(".app") || document.body : null;
 
   return (
     <>
@@ -182,7 +196,7 @@ export default function Select({
               );
             })}
           </ul>,
-          host
+          host,
         )}
     </>
   );

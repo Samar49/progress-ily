@@ -4,7 +4,13 @@ import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { getErrorMessage, getGoals, getTasks } from "../../api.js";
 import { CATEGORY_COLORS } from "../../constants.js";
 import { useTaskDialog } from "../../hooks.js";
-import { apiDateToString, formatLong, fromDateString, monthGrid, toDateString } from "../../utils/date.js";
+import {
+  apiDateToString,
+  formatLong,
+  fromDateString,
+  monthGrid,
+  toDateString,
+} from "../../utils/date.js";
 import { ErrorMessage, Skeleton } from "../common/Feedback.jsx";
 import MonthGrid from "../planner/MonthGrid.jsx";
 import TaskTable, { normalizeTask } from "../planner/TaskTable.jsx";
@@ -65,7 +71,10 @@ export default function CalendarPage() {
     setCursor({ year: date.getFullYear(), month: date.getMonth() });
   }
 
-  const title = new Date(cursor.year, cursor.month, 1).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+  const title = new Date(cursor.year, cursor.month, 1).toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
   const dayTasks = tasksByDate[selected] || [];
   const dayGoals = goalsByDate[selected] || [];
 
@@ -76,7 +85,11 @@ export default function CalendarPage() {
           <h1>Calendar</h1>
           <p>See your tasks and goal deadlines at a glance.</p>
         </div>
-        <button type="button" className="primary-btn" onClick={() => openTaskDialog(null, { date: selected })}>
+        <button
+          type="button"
+          className="primary-btn"
+          onClick={() => openTaskDialog(null, { date: selected })}
+        >
           <Plus size={19} /> Add Task
         </button>
       </div>
@@ -88,7 +101,14 @@ export default function CalendarPage() {
           <div className="panel-heading">
             <h2>{title}</h2>
             <div className="date-controls">
-              <button type="button" className="square-btn" onClick={() => shift(-1)} aria-label="Previous month"><ChevronLeft size={18} /></button>
+              <button
+                type="button"
+                className="square-btn"
+                onClick={() => shift(-1)}
+                aria-label="Previous month"
+              >
+                <ChevronLeft size={18} />
+              </button>
               <button
                 type="button"
                 className="today-btn"
@@ -101,18 +121,46 @@ export default function CalendarPage() {
               >
                 Today
               </button>
-              <button type="button" className="square-btn" style={{ borderRadius: "0 10px 10px 0" }} onClick={() => shift(1)} aria-label="Next month"><ChevronRight size={18} /></button>
+              <button
+                type="button"
+                className="square-btn"
+                style={{ borderRadius: "0 10px 10px 0" }}
+                onClick={() => shift(1)}
+                aria-label="Next month"
+              >
+                <ChevronRight size={18} />
+              </button>
             </div>
           </div>
           {loading && !tasks.length ? (
             <Skeleton height={380} />
           ) : (
-            <MonthGrid year={cursor.year} month={cursor.month} tasksByDate={tasksByDate} extrasByDate={goalsByDate} selected={selected} onSelect={setSelected} />
+            <MonthGrid
+              year={cursor.year}
+              month={cursor.month}
+              tasksByDate={tasksByDate}
+              extrasByDate={goalsByDate}
+              selected={selected}
+              onSelect={setSelected}
+            />
           )}
           <div className="legend" style={{ marginTop: 12, flexWrap: "wrap" }}>
-            {Object.entries(CATEGORY_COLORS).slice(0, 6).map(([name, color]) => (
-              <span key={name}><i style={{ width: 10, height: 10, borderRadius: 3, background: color, display: "inline-block" }} /> {name}</span>
-            ))}
+            {Object.entries(CATEGORY_COLORS)
+              .slice(0, 6)
+              .map(([name, color]) => (
+                <span key={name}>
+                  <i
+                    style={{
+                      width: 10,
+                      height: 10,
+                      borderRadius: 3,
+                      background: color,
+                      display: "inline-block",
+                    }}
+                  />{" "}
+                  {name}
+                </span>
+              ))}
             <span>🎯 Goal deadline</span>
           </div>
         </section>
@@ -122,11 +170,22 @@ export default function CalendarPage() {
             <h2>{formatLong(selected)}</h2>
           </div>
           {dayGoals.map((goal) => (
-            <p key={goal} className="pi-goal-due">🎯 Goal due: <b>{goal}</b></p>
+            <p key={goal} className="pi-goal-due">
+              🎯 Goal due: <b>{goal}</b>
+            </p>
           ))}
           <TaskTable tasks={dayTasks} compact emptyText="No tasks on this day." />
-          <button type="button" className="secondary-btn" style={{ marginTop: 12, width: "100%" }} onClick={() => openTaskDialog(null, { date: selected })}>
-            <Plus size={16} style={{ verticalAlign: "middle" }} /> Add task for {fromDateString(selected).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+          <button
+            type="button"
+            className="secondary-btn"
+            style={{ marginTop: 12, width: "100%" }}
+            onClick={() => openTaskDialog(null, { date: selected })}
+          >
+            <Plus size={16} style={{ verticalAlign: "middle" }} /> Add task for{" "}
+            {fromDateString(selected).toLocaleDateString("en-GB", {
+              day: "numeric",
+              month: "short",
+            })}
           </button>
         </aside>
       </div>

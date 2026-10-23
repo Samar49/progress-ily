@@ -10,20 +10,75 @@ const iso = (day) => new Date(`${day}T00:00:00.000Z`);
 const tasks = [
   { date: iso("2026-10-16"), category: "DSA", priority: "High", status: "Completed", goalId: "g1" },
   { date: iso("2026-10-16"), category: "DSA", priority: "Medium", status: "Pending", goalId: "g1" },
-  { date: iso("2026-10-15"), category: "Fitness", priority: "High", status: "In Progress", goalId: null },
-  { date: iso("2026-10-10"), category: "Global", priority: "Low", status: "Completed", goalId: null },
+  {
+    date: iso("2026-10-15"),
+    category: "Fitness",
+    priority: "High",
+    status: "In Progress",
+    goalId: null,
+  },
+  {
+    date: iso("2026-10-10"),
+    category: "Global",
+    priority: "Low",
+    status: "Completed",
+    goalId: null,
+  },
   { date: iso("2026-09-01"), category: "Global", priority: "Low", status: "Pending", goalId: null },
 ];
 const goals = [
-  { _id: "g1", title: "Linked", status: "Active", targetDate: iso("2026-10-18"), progressMode: "tasks" },
-  { _id: "g2", title: "Measured", status: "Active", targetDate: iso("2026-10-01"), progressMode: "measurable", targetValue: 300, currentValue: 120 },
-  { _id: "g3", title: "Done", status: "Completed", targetDate: iso("2026-12-31"), progressMode: "manual", manualProgress: 100 },
-  { _id: "g4", title: "Paused", status: "On Hold", targetDate: iso("2026-12-31"), progressMode: "manual", manualProgress: 25 },
-  { _id: "g5", title: "Later", status: "Not Started", targetDate: iso("2027-01-31"), progressMode: "manual", manualProgress: 0 },
+  {
+    _id: "g1",
+    title: "Linked",
+    status: "Active",
+    targetDate: iso("2026-10-18"),
+    progressMode: "tasks",
+  },
+  {
+    _id: "g2",
+    title: "Measured",
+    status: "Active",
+    targetDate: iso("2026-10-01"),
+    progressMode: "measurable",
+    targetValue: 300,
+    currentValue: 120,
+  },
+  {
+    _id: "g3",
+    title: "Done",
+    status: "Completed",
+    targetDate: iso("2026-12-31"),
+    progressMode: "manual",
+    manualProgress: 100,
+  },
+  {
+    _id: "g4",
+    title: "Paused",
+    status: "On Hold",
+    targetDate: iso("2026-12-31"),
+    progressMode: "manual",
+    manualProgress: 25,
+  },
+  {
+    _id: "g5",
+    title: "Later",
+    status: "Not Started",
+    targetDate: iso("2027-01-31"),
+    progressMode: "manual",
+    manualProgress: 0,
+  },
 ];
 
 function chain(rows) {
-  return { select() { return this; }, sort() { return this; }, lean: async () => rows };
+  return {
+    select() {
+      return this;
+    },
+    sort() {
+      return this;
+    },
+    lean: async () => rows,
+  };
 }
 function inject(file, exports) {
   const full = require.resolve(path.join("..", file));
@@ -55,8 +110,14 @@ const { getAnalyticsSummary } = require("../controllers/analyticsController");
 async function call(query) {
   const res = {
     statusCode: 200,
-    status(code) { this.statusCode = code; return this; },
-    json(body) { this.body = body; return this; },
+    status(code) {
+      this.statusCode = code;
+      return this;
+    },
+    json(body) {
+      this.body = body;
+      return this;
+    },
   };
   await getAnalyticsSummary({ userId: USER, query }, res);
   return res;
@@ -65,10 +126,22 @@ async function call(query) {
 test("counts, completion rate and breakdowns reconcile with the data", async () => {
   const { body } = await call({ today: "2026-10-16" });
   const s = body.summary;
-  assert.deepEqual(s.taskCounts, { total: 5, completed: 2, pending: 2, inProgress: 1, highPriority: 2 });
+  assert.deepEqual(s.taskCounts, {
+    total: 5,
+    completed: 2,
+    pending: 2,
+    inProgress: 1,
+    highPriority: 2,
+  });
   assert.equal(s.completionRate, 40);
-  assert.equal(s.categoryBreakdown.reduce((n, c) => n + c.count, 0), 5);
-  assert.equal(s.priorityBreakdown.reduce((n, c) => n + c.count, 0), 5);
+  assert.equal(
+    s.categoryBreakdown.reduce((n, c) => n + c.count, 0),
+    5,
+  );
+  assert.equal(
+    s.priorityBreakdown.reduce((n, c) => n + c.count, 0),
+    5,
+  );
   assert.equal(s.categoryBreakdown[0].count, 2);
 });
 
@@ -84,7 +157,11 @@ test("seven-day trend ends on the client's today, not the server's UTC day", asy
 });
 
 test("date range filters tasks inclusively", async () => {
-  const { body } = await call({ today: "2026-10-16", startDate: "2026-10-15", endDate: "2026-10-16" });
+  const { body } = await call({
+    today: "2026-10-16",
+    startDate: "2026-10-15",
+    endDate: "2026-10-16",
+  });
   assert.equal(body.summary.taskCounts.total, 3);
   assert.equal(body.summary.filters.taskScope, "selectedDateRange");
 });
@@ -92,7 +169,15 @@ test("date range filters tasks inclusively", async () => {
 test("goal counts, progress, overdue and due-soon are correct", async () => {
   const { body } = await call({ today: "2026-10-16" });
   const g = body.summary.goalCounts;
-  assert.deepEqual(g, { total: 5, active: 2, completed: 1, onHold: 1, notStarted: 1, overdue: 1, dueSoon: 1 });
+  assert.deepEqual(g, {
+    total: 5,
+    active: 2,
+    completed: 1,
+    onHold: 1,
+    notStarted: 1,
+    overdue: 1,
+    dueSoon: 1,
+  });
   const byTitle = Object.fromEntries(body.summary.goals.map((x) => [x.title, x.progress]));
   assert.equal(byTitle.Linked, 50);
   assert.equal(byTitle.Measured, 40);

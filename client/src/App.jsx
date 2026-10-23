@@ -5,21 +5,17 @@ import Header from "./components/Header.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import AuthPage from "./components/AuthPage.jsx";
 import TaskFormModal from "./components/planner/TaskFormModal.jsx";
-import Dashboard from "./components/dashboard/Dashboard.jsx";
 import DailyPlanner from "./components/planner/DailyPlanner.jsx";
-import GoalsPage from "./components/GoalsPage.jsx";
 import { Skeleton } from "./components/common/Feedback.jsx";
 
 import { getStoredUser, signOut } from "./api.js";
 import { TaskDialogContext, useScrollLock, useTheme } from "./hooks.js";
 
 import "./styles.css";
-import "./extra.css";
-import "./glass.css";
-import "./responsive.css";
-import "./polish.css";
 
-// Less-used pages are loaded on demand to keep the first bundle small.
+// Pages are loaded on demand to keep the first bundle small (the charts library is large).
+const Dashboard = lazy(() => import("./components/dashboard/Dashboard.jsx"));
+const GoalsPage = lazy(() => import("./components/GoalsPage.jsx"));
 const AnalyticsPage = lazy(() => import("./components/AnalyticsPage.jsx"));
 const CalendarPage = lazy(() => import("./components/pages/CalendarPage.jsx"));
 const FocusTimer = lazy(() => import("./components/pages/FocusTimer.jsx"));
@@ -97,7 +93,7 @@ export default function App() {
       setSearchTerm("");
       navigate("/dashboard", { replace: true });
     },
-    [navigate]
+    [navigate],
   );
 
   const handleLogout = useCallback(() => {
@@ -115,7 +111,7 @@ export default function App() {
       version,
       openTaskDialog: (task = null, defaults = null) => setDialog({ task, defaults }),
     }),
-    [version]
+    [version],
   );
 
   if (!user) {
@@ -132,11 +128,28 @@ export default function App() {
         <a href="#main" className="pi-skip-link">
           Skip to content
         </a>
-        <Sidebar user={user} onLogout={handleLogout} open={navOpen} onClose={() => setNavOpen(false)} />
-        <div className={`pi-nav-overlay ${navOpen ? "show" : ""}`} onClick={() => setNavOpen(false)} aria-hidden="true" />
+        <Sidebar
+          user={user}
+          onLogout={handleLogout}
+          open={navOpen}
+          onClose={() => setNavOpen(false)}
+        />
+        <div
+          className={`pi-nav-overlay ${navOpen ? "show" : ""}`}
+          onClick={() => setNavOpen(false)}
+          aria-hidden="true"
+        />
 
         <div className="main-shell" id="main">
-          <Header onMenu={() => setNavOpen(true)} theme={theme} setTheme={setPreference} user={user} onSearch={setSearchTerm} searchValue={searchTerm} refreshKey={version} />
+          <Header
+            onMenu={() => setNavOpen(true)}
+            theme={theme}
+            setTheme={setPreference}
+            user={user}
+            onSearch={setSearchTerm}
+            searchValue={searchTerm}
+            refreshKey={version}
+          />
 
           <Suspense
             fallback={
@@ -147,9 +160,22 @@ export default function App() {
           >
             <Routes>
               <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard user={user} searchTerm={searchTerm} onClearSearch={clearSearch} />} />
-              <Route path="/planner" element={<DailyPlanner searchTerm={searchTerm} onClearSearch={clearSearch} user={user} />} />
-              <Route path="/goals" element={<GoalsPage searchTerm={searchTerm} onClearSearch={clearSearch} />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <Dashboard user={user} searchTerm={searchTerm} onClearSearch={clearSearch} />
+                }
+              />
+              <Route
+                path="/planner"
+                element={
+                  <DailyPlanner searchTerm={searchTerm} onClearSearch={clearSearch} user={user} />
+                }
+              />
+              <Route
+                path="/goals"
+                element={<GoalsPage searchTerm={searchTerm} onClearSearch={clearSearch} />}
+              />
               <Route path="/analytics" element={<AnalyticsPage />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/focus" element={<FocusTimer />} />

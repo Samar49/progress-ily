@@ -218,9 +218,7 @@ const deleteTask = async (req, res, next) => {
     requireValidId(req.params.id);
     const task = await Task.findOneAndDelete({ _id: req.params.id, userId });
     if (!task) throw new ApiError(404, "Task not found.");
-    return res
-      .status(200)
-      .json({ message: "Task deleted successfully", id: String(task._id) });
+    return res.status(200).json({ message: "Task deleted successfully", id: String(task._id) });
   } catch (error) {
     return next(error);
   }

@@ -13,16 +13,22 @@ function errorHandler(error, req, res, next) {
   }
 
   if (error instanceof SyntaxError && error.status === 400 && "body" in error) {
-    return res.status(400).json({ message: "Request body contains invalid JSON.", code: "INVALID_JSON" });
+    return res
+      .status(400)
+      .json({ message: "Request body contains invalid JSON.", code: "INVALID_JSON" });
   }
 
   if (error.type === "entity.too.large") {
-    return res.status(413).json({ message: "Request body is too large.", code: "PAYLOAD_TOO_LARGE" });
+    return res
+      .status(413)
+      .json({ message: "Request body is too large.", code: "PAYLOAD_TOO_LARGE" });
   }
 
   if (error.name === "ValidationError") {
     const first = Object.values(error.errors || {})[0];
-    return res.status(400).json({ message: first?.message || "Validation failed.", code: "VALIDATION_ERROR" });
+    return res
+      .status(400)
+      .json({ message: first?.message || "Validation failed.", code: "VALIDATION_ERROR" });
   }
 
   if (error.name === "CastError") {
@@ -30,11 +36,15 @@ function errorHandler(error, req, res, next) {
   }
 
   if (error.code === 11000) {
-    return res.status(409).json({ message: "A record with these details already exists.", code: "DUPLICATE" });
+    return res
+      .status(409)
+      .json({ message: "A record with these details already exists.", code: "DUPLICATE" });
   }
 
   console.error("Unhandled API error:", error);
-  return res.status(500).json({ message: "An unexpected server error occurred.", code: "SERVER_ERROR" });
+  return res
+    .status(500)
+    .json({ message: "An unexpected server error occurred.", code: "SERVER_ERROR" });
 }
 
 module.exports = { notFound, errorHandler };

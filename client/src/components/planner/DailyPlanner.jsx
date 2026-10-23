@@ -1,13 +1,17 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { CalendarDays, CheckCircle2, ChevronLeft, ChevronRight, Clock3, Plus, Search, Target, Zap } from "lucide-react";
-
 import {
-  addTask,
-  editTask,
-  getErrorMessage,
-  getTasks,
-  removeTask,
-} from "../../api.js";
+  CalendarDays,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  Clock3,
+  Plus,
+  Search,
+  Target,
+  Zap,
+} from "lucide-react";
+
+import { addTask, editTask, getErrorMessage, getTasks, removeTask } from "../../api.js";
 import { CATEGORIES, PRIORITIES } from "../../constants.js";
 import { useLocalStorageState, useTaskDialog } from "../../hooks.js";
 import {
@@ -59,7 +63,9 @@ function groupByDate(tasks) {
 function MetricTile({ tone, icon: Icon, value, label, caption, captionClass }) {
   return (
     <article className={`metric tinted ${tone}`}>
-      <span className={`icon-box ${tone === "mint" ? "green" : tone === "lilac" ? "purple" : tone === "blush" ? "red" : "blue"}`}>
+      <span
+        className={`icon-box ${tone === "mint" ? "green" : tone === "lilac" ? "purple" : tone === "blush" ? "red" : "blue"}`}
+      >
         <Icon size={25} aria-hidden="true" />
       </span>
       <div>
@@ -76,7 +82,7 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
 
   const [view, setView] = useLocalStorageState(
     "progressily_planner_view",
-    user?.preferences?.defaultView || "Day"
+    user?.preferences?.defaultView || "Day",
   );
   const [selectedDate, setSelectedDate] = useState(toDateString());
   const [tasks, setTasks] = useState([]);
@@ -116,10 +122,12 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
         if (category !== "All" && task.category !== category) return false;
         if (!query) return true;
         return [task.title, task.category, task.priority, task.status, task.notes].some((value) =>
-          String(value || "").toLowerCase().includes(query)
+          String(value || "")
+            .toLowerCase()
+            .includes(query),
         );
       }),
-    [tasks, category, query]
+    [tasks, category, query],
   );
 
   const stats = useMemo(() => {
@@ -176,7 +184,9 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
   function shift(direction) {
     if (view === "Month") {
       const base = fromDateString(selectedDate);
-      setSelectedDate(toDateString(new Date(base.getFullYear(), base.getMonth() + direction, 1, 12)));
+      setSelectedDate(
+        toDateString(new Date(base.getFullYear(), base.getMonth() + direction, 1, 12)),
+      );
     } else {
       setSelectedDate(addDays(selectedDate, direction * step));
     }
@@ -187,7 +197,10 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
       ? formatLong(selectedDate)
       : view === "Week"
         ? `${fromDateString(startOfWeek(selectedDate)).toLocaleDateString("en-GB", { day: "numeric", month: "short" })} – ${fromDateString(addDays(startOfWeek(selectedDate), 6)).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}`
-        : fromDateString(selectedDate).toLocaleDateString("en-GB", { month: "long", year: "numeric" });
+        : fromDateString(selectedDate).toLocaleDateString("en-GB", {
+            month: "long",
+            year: "numeric",
+          });
 
   const periodWord = view === "Day" ? "Today's" : view === "Week" ? "This week's" : "This month's";
   const byDate = useMemo(() => groupByDate(filtered), [filtered]);
@@ -204,17 +217,31 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
 
       <div className="planner-toolbar">
         <div className="date-controls" role="group" aria-label="Change date">
-          <button type="button" className="square-btn" onClick={() => shift(-1)} aria-label={`Previous ${view.toLowerCase()}`}>
+          <button
+            type="button"
+            className="square-btn"
+            onClick={() => shift(-1)}
+            aria-label={`Previous ${view.toLowerCase()}`}
+          >
             <ChevronLeft size={18} />
           </button>
           <span className="date-label">
             <CalendarDays size={17} aria-hidden="true" />
             <b>{label}</b>
           </span>
-          <button type="button" className="square-btn" onClick={() => shift(1)} aria-label={`Next ${view.toLowerCase()}`}>
+          <button
+            type="button"
+            className="square-btn"
+            onClick={() => shift(1)}
+            aria-label={`Next ${view.toLowerCase()}`}
+          >
             <ChevronRight size={18} />
           </button>
-          <button type="button" className="today-btn" onClick={() => setSelectedDate(toDateString())}>
+          <button
+            type="button"
+            className="today-btn"
+            onClick={() => setSelectedDate(toDateString())}
+          >
             Today
           </button>
         </div>
@@ -234,16 +261,48 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
           ))}
         </div>
 
-        <button type="button" className="primary-btn" onClick={() => openTaskDialog(null, { date: selectedDate })}>
+        <button
+          type="button"
+          className="primary-btn"
+          onClick={() => openTaskDialog(null, { date: selectedDate })}
+        >
           <Plus size={19} /> Add Task
         </button>
       </div>
 
       <section className="metrics planner-metrics">
-        <MetricTile tone="mint" icon={CalendarDays} value={stats.total} label="Tasks Scheduled" caption={`${stats.done} completed · ${stats.remaining} remaining`} />
-        <MetricTile tone="lilac" icon={Clock3} value={formatHours(stats.minutes)} label="Planned Focus Time" caption={view === "Day" ? `~${Math.round((stats.minutes / 480) * 100)}% of an 8h day` : `${periodWord} total`} />
-        <MetricTile tone="blush" icon={Target} value={stats.high} label="High Priority Tasks" caption={stats.high ? "Stay on track!" : "Nothing urgent"} />
-        <MetricTile tone="ice" icon={CheckCircle2} value={stats.done} label="Tasks Completed" caption={stats.done ? "Great progress! 🎉" : "Let's get started"} />
+        <MetricTile
+          tone="mint"
+          icon={CalendarDays}
+          value={stats.total}
+          label="Tasks Scheduled"
+          caption={`${stats.done} completed · ${stats.remaining} remaining`}
+        />
+        <MetricTile
+          tone="lilac"
+          icon={Clock3}
+          value={formatHours(stats.minutes)}
+          label="Planned Focus Time"
+          caption={
+            view === "Day"
+              ? `~${Math.round((stats.minutes / 480) * 100)}% of an 8h day`
+              : `${periodWord} total`
+          }
+        />
+        <MetricTile
+          tone="blush"
+          icon={Target}
+          value={stats.high}
+          label="High Priority Tasks"
+          caption={stats.high ? "Stay on track!" : "Nothing urgent"}
+        />
+        <MetricTile
+          tone="ice"
+          icon={CheckCircle2}
+          value={stats.done}
+          label="Tasks Completed"
+          caption={stats.done ? "Great progress! 🎉" : "Let's get started"}
+        />
       </section>
 
       <ErrorMessage onRetry={load}>{error}</ErrorMessage>
@@ -287,8 +346,18 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
                     const day = addDays(startOfWeek(selectedDate), index);
                     const items = byDate[day] || [];
                     return (
-                      <div key={day} className={`pi-week-col ${day === toDateString() ? "today" : ""}`}>
-                        <button type="button" className="pi-week-head" onClick={() => { setSelectedDate(day); setView("Day"); }}>
+                      <div
+                        key={day}
+                        className={`pi-week-col ${day === toDateString() ? "today" : ""}`}
+                      >
+                        <button
+                          type="button"
+                          className="pi-week-head"
+                          onClick={() => {
+                            setSelectedDate(day);
+                            setView("Day");
+                          }}
+                        >
                           <span>{name}</span>
                           <b>{fromDateString(day).getDate()}</b>
                         </button>
@@ -331,12 +400,24 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
 
               <div className="filters" role="group" aria-label="Filter by category">
                 {["All", ...usedCategories].map((item) => (
-                  <button type="button" key={item} className={category === item ? "active" : ""} onClick={() => setCategory(item)} aria-pressed={category === item}>
+                  <button
+                    type="button"
+                    key={item}
+                    className={category === item ? "active" : ""}
+                    onClick={() => setCategory(item)}
+                    aria-pressed={category === item}
+                  >
                     {item}
                   </button>
                 ))}
                 {(category !== "All" || localSearch) && (
-                  <button type="button" onClick={() => { setCategory("All"); setLocalSearch(""); }}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCategory("All");
+                      setLocalSearch("");
+                    }}
+                  >
                     Clear filters
                   </button>
                 )}
@@ -351,18 +432,36 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
                   onEdit={(task) => openTaskDialog(task)}
                   onDelete={(task) => setConfirming(task)}
                   busyId={busyId}
-                  emptyText={tasks.length ? "No tasks match your filters." : "No tasks for this day yet. Add one below."}
+                  emptyText={
+                    tasks.length
+                      ? "No tasks match your filters."
+                      : "No tasks for this day yet. Add one below."
+                  }
                 />
               )}
             </section>
           )}
 
-          <QuickAdd date={selectedDate} defaultCategory={user?.preferences?.defaultCategory} onAdded={() => { onClearSearch?.(); flash("Task added."); load(); }} onError={setError} />
+          <QuickAdd
+            date={selectedDate}
+            defaultCategory={user?.preferences?.defaultCategory}
+            onAdded={() => {
+              onClearSearch?.();
+              flash("Task added.");
+              load();
+            }}
+            onError={setError}
+          />
         </div>
 
         <aside className="planner-aside">
           <MiniCalendar selected={selectedDate} onSelect={setSelectedDate} />
-          <DayOverview tasks={tasks} title={view === "Day" ? "Day Overview" : view === "Week" ? "Week Overview" : "Month Overview"} />
+          <DayOverview
+            tasks={tasks}
+            title={
+              view === "Day" ? "Day Overview" : view === "Week" ? "Week Overview" : "Month Overview"
+            }
+          />
         </aside>
       </div>
 
@@ -380,7 +479,14 @@ export default function DailyPlanner({ searchTerm = "", onClearSearch, user }) {
 }
 
 function QuickAdd({ date, defaultCategory, onAdded, onError }) {
-  const [form, setForm] = useState({ title: "", date, startTime: "", endTime: "", category: CATEGORIES.includes(defaultCategory) ? defaultCategory : "Personal", priority: "Medium" });
+  const [form, setForm] = useState({
+    title: "",
+    date,
+    startTime: "",
+    endTime: "",
+    category: CATEGORIES.includes(defaultCategory) ? defaultCategory : "Personal",
+    priority: "Medium",
+  });
   const [saving, setSaving] = useState(false);
   const [localError, setLocalError] = useState("");
 
@@ -419,28 +525,44 @@ function QuickAdd({ date, defaultCategory, onAdded, onError }) {
   return (
     <section className="panel quick-add">
       <div className="quick-heading">
-        <span className="icon-box green"><Zap size={22} aria-hidden="true" /></span>
+        <span className="icon-box green">
+          <Zap size={22} aria-hidden="true" />
+        </span>
         <div>
           <h3>Quick Add Task</h3>
           <p>Add a new task in seconds</p>
         </div>
       </div>
-      {localError && <p className="pi-field-error" role="alert">{localError}</p>}
+      {localError && (
+        <p className="pi-field-error" role="alert">
+          {localError}
+        </p>
+      )}
       <form className="pi-quick-form" onSubmit={submit} noValidate>
         <label className="field pi-q-title">
           <span className="pi-sr-only">Task title</span>
-          <input name="title" placeholder="Task title..." value={form.title} onChange={update} maxLength={150} />
+          <input
+            name="title"
+            placeholder="Task title..."
+            value={form.title}
+            onChange={update}
+            maxLength={150}
+          />
         </label>
         <label className="field">
           Category
           <Select name="category" value={form.category} onChange={update}>
-            {CATEGORIES.map((item) => <option key={item}>{item}</option>)}
+            {CATEGORIES.map((item) => (
+              <option key={item}>{item}</option>
+            ))}
           </Select>
         </label>
         <label className="field">
           Priority
           <Select name="priority" value={form.priority} onChange={update}>
-            {PRIORITIES.map((item) => <option key={item}>{item}</option>)}
+            {PRIORITIES.map((item) => (
+              <option key={item}>{item}</option>
+            ))}
           </Select>
         </label>
         <label className="field">

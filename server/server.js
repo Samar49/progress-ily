@@ -36,7 +36,7 @@ app.use(
       if (allowedOrigins.length === 0) return callback(null, !isProduction);
       return callback(null, allowedOrigins.includes(origin.replace(/\/$/, "")));
     },
-  })
+  }),
 );
 app.use(express.json({ limit: "100kb" }));
 

@@ -8,8 +8,7 @@ const api = axios.create({
   // VITE_API_URL must be set when building for production. The "/api" fallback
   // only works when the API is served from the same domain (reverse proxy).
   baseURL:
-    import.meta.env.VITE_API_URL ||
-    (import.meta.env.DEV ? "http://localhost:5000/api" : "/api"),
+    import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "http://localhost:5000/api" : "/api"),
   timeout: 20000,
 });
 
@@ -31,7 +30,7 @@ api.interceptors.response.use(
       window.dispatchEvent(new Event("progressily:unauthorized"));
     }
     return Promise.reject(error);
-  }
+  },
 );
 
 export function getErrorMessage(error, fallback = "Something went wrong. Please try again.") {
@@ -43,7 +42,8 @@ export function getErrorMessage(error, fallback = "Something went wrong. Please 
   return error?.message || fallback;
 }
 
-const list = (data, key) => (Array.isArray(data) ? data : Array.isArray(data?.[key]) ? data[key] : []);
+const list = (data, key) =>
+  Array.isArray(data) ? data : Array.isArray(data?.[key]) ? data[key] : [];
 const item = (data, key) => data?.[key] ?? data;
 
 // ---------- Authentication ----------
@@ -103,7 +103,7 @@ export async function deleteAccount(password) {
 export async function getTasks(filters = {}) {
   const params = typeof filters === "string" ? { date: filters } : filters;
   const clean = Object.fromEntries(
-    Object.entries(params).filter(([, value]) => value !== undefined && value !== "")
+    Object.entries(params).filter(([, value]) => value !== undefined && value !== ""),
   );
   const { data } = await api.get("/tasks", { params: clean });
   return list(data, "tasks");
@@ -160,13 +160,16 @@ export async function logFocusSession(session) {
   return item(data, "session");
 }
 
+// Focus times are grouped by the user's local day, so the browser's UTC offset is sent too.
+const withTimezone = (params) => ({ tzOffset: new Date().getTimezoneOffset(), ...params });
+
 export async function getFocusSessions(params = {}) {
-  const { data } = await api.get("/focus", { params });
+  const { data } = await api.get("/focus", { params: withTimezone(params) });
   return list(data, "sessions");
 }
 
 export async function getFocusSummary(params = {}) {
-  const { data } = await api.get("/focus/summary", { params });
+  const { data } = await api.get("/focus/summary", { params: withTimezone(params) });
   return data?.summary ?? data;
 }
 

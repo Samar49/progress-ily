@@ -1,12 +1,4 @@
-export const CATEGORIES = [
-  "Global",
-  "Fitness",
-  "Project",
-  "Studies",
-  "Work",
-  "Personal",
-  "Other",
-];
+export const CATEGORIES = ["Global", "Fitness", "Project", "Studies", "Work", "Personal", "Other"];
 
 export const PRIORITIES = ["Low", "Medium", "High"];
 export const STATUSES = ["Pending", "In Progress", "Completed"];

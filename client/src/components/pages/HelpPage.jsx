@@ -1,9 +1,24 @@
 const FAQ = [
-  ["How is goal progress calculated?", "Each goal uses one method you choose: linked tasks (completed ÷ linked tasks), a measurable number (for example 120 of 300 problems) or a manual percentage."],
-  ["How do I link a task to a goal?", "Open the task form (Add Task or Edit) and pick a goal in the Goal field. The goal's progress updates when linked tasks are completed."],
-  ["Where does Focus Time come from?", "From sessions saved by the Focus Timer. If you haven't tracked any yet, the dashboard shows planned time from your completed timed tasks and labels it 'Planned'."],
-  ["What happens when I delete a goal?", "The goal is removed. Tasks linked to it are kept and simply unlinked."],
-  ["Can I use the app on my phone?", "Yes. The layout adapts to tablets and phones, and the sidebar collapses to icons on small screens."],
+  [
+    "How is goal progress calculated?",
+    "Each goal uses one method you choose: linked tasks (completed ÷ linked tasks), a measurable number (for example 120 of 300 problems) or a manual percentage.",
+  ],
+  [
+    "How do I link a task to a goal?",
+    "Open the task form (Add Task or Edit) and pick a goal in the Goal field. The goal's progress updates when linked tasks are completed.",
+  ],
+  [
+    "Where does Focus Time come from?",
+    "From sessions saved by the Focus Timer. If you haven't tracked any yet, the dashboard shows planned time from your completed timed tasks and labels it 'Planned'.",
+  ],
+  [
+    "What happens when I delete a goal?",
+    "The goal is removed. Tasks linked to it are kept and simply unlinked.",
+  ],
+  [
+    "Can I use the app on my phone?",
+    "Yes. The layout adapts to tablets and phones, and the sidebar collapses to icons on small screens.",
+  ],
 ];
 
 const SHORTCUTS = [
@@ -39,13 +54,16 @@ export default function HelpPage() {
         <dl className="pi-shortcuts">
           {SHORTCUTS.map(([keys, text]) => (
             <div key={keys}>
-              <dt><kbd>{keys}</kbd></dt>
+              <dt>
+                <kbd>{keys}</kbd>
+              </dt>
               <dd>{text}</dd>
             </div>
           ))}
         </dl>
         <p className="pi-muted" style={{ marginTop: 16 }}>
-          Found a problem or have an idea? Contact the app owner or open an issue in your project repository.
+          Found a problem or have an idea? Contact the app owner or open an issue in your project
+          repository.
         </p>
       </section>
     </main>

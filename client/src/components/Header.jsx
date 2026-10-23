@@ -5,7 +5,15 @@ import { useNavigate } from "react-router-dom";
 import { getGoals, getTasks } from "../api.js";
 import { addDays, apiDateToString, formatShort, toDateString } from "../utils/date.js";
 
-export default function Header({ theme, setTheme, user, onSearch, onMenu, searchValue = "", refreshKey }) {
+export default function Header({
+  theme,
+  setTheme,
+  user,
+  onSearch,
+  onMenu,
+  searchValue = "",
+  refreshKey,
+}) {
   const search = searchValue;
   const [open, setOpen] = useState(false);
   const [notes, setNotes] = useState([]);
@@ -41,22 +49,45 @@ export default function Header({ theme, setTheme, user, onSearch, onMenu, search
   useEffect(() => {
     let active = true;
     const today = toDateString();
-    Promise.all([getTasks({ startDate: addDays(today, -14), endDate: addDays(today, 1) }), getGoals()])
+    Promise.all([
+      getTasks({ startDate: addDays(today, -14), endDate: addDays(today, 1) }),
+      getGoals(),
+    ])
       .then(([tasks, goals]) => {
         if (!active) return;
         const items = [];
         for (const task of tasks) {
           if (task.status === "Completed") continue;
           const day = apiDateToString(task.date);
-          if (day < today) items.push({ key: task._id, type: "task", text: `Overdue: ${task.title}`, meta: formatShort(day), to: "/planner" });
-          else if (day === today) items.push({ key: task._id, type: "task", text: `Due today: ${task.title}`, meta: task.startTime || "Today", to: "/planner" });
+          if (day < today)
+            items.push({
+              key: task._id,
+              type: "task",
+              text: `Overdue: ${task.title}`,
+              meta: formatShort(day),
+              to: "/planner",
+            });
+          else if (day === today)
+            items.push({
+              key: task._id,
+              type: "task",
+              text: `Due today: ${task.title}`,
+              meta: task.startTime || "Today",
+              to: "/planner",
+            });
         }
         const weekAhead = addDays(today, 7);
         for (const goal of goals) {
           if (goal.status === "Completed") continue;
           const day = apiDateToString(goal.targetDate);
           if (day >= today && day <= weekAhead) {
-            items.push({ key: goal.id, type: "goal", text: `Goal due soon: ${goal.title}`, meta: formatShort(day), to: "/goals" });
+            items.push({
+              key: goal.id,
+              type: "goal",
+              text: `Goal due soon: ${goal.title}`,
+              meta: formatShort(day),
+              to: "/goals",
+            });
           }
         }
         setNotes(items.slice(0, 8));
@@ -80,7 +111,12 @@ export default function Header({ theme, setTheme, user, onSearch, onMenu, search
 
   return (
     <header className="topbar">
-      <button type="button" className="pi-icon-btn pi-menu-btn" onClick={onMenu} aria-label="Open menu">
+      <button
+        type="button"
+        className="pi-icon-btn pi-menu-btn"
+        onClick={onMenu}
+        aria-label="Open menu"
+      >
         <Menu size={22} />
       </button>
 
@@ -96,7 +132,12 @@ export default function Header({ theme, setTheme, user, onSearch, onMenu, search
           className="pi-search-input"
         />
         {search ? (
-          <button type="button" className="pi-icon-btn" aria-label="Clear search" onClick={clearSearch}>
+          <button
+            type="button"
+            className="pi-icon-btn"
+            aria-label="Clear search"
+            onClick={clearSearch}
+          >
             <X size={15} />
           </button>
         ) : null}
@@ -111,7 +152,10 @@ export default function Header({ theme, setTheme, user, onSearch, onMenu, search
           title={`Current: ${theme} mode`}
         >
           <Sun size={16} className="pi-theme-icon pi-sun" />
-          <span className="toggle" style={{ justifyContent: theme === "light" ? "flex-start" : "flex-end" }}>
+          <span
+            className="toggle"
+            style={{ justifyContent: theme === "light" ? "flex-start" : "flex-end" }}
+          >
             <i />
           </span>
           <Moon size={16} className="pi-theme-icon pi-moon" />
@@ -157,7 +201,6 @@ export default function Header({ theme, setTheme, user, onSearch, onMenu, search
             </div>
           )}
         </div>
-
       </div>
     </header>
   );

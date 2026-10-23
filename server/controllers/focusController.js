@@ -3,7 +3,13 @@ const mongoose = require("mongoose");
 const FocusSession = require("../models/FocusSession");
 const Task = require("../models/Task");
 const ApiError = require("../utils/ApiError");
-const { parseDateOnly, addDaysUTC, dateKey } = require("../utils/dates");
+const {
+  parseDateOnly,
+  addDaysUTC,
+  parseTzOffset,
+  localDayStart,
+  localDateKey,
+} = require("../utils/dates");
 
 function getUserId(req) {
   if (!req.userId || !mongoose.isValidObjectId(req.userId)) {
@@ -12,19 +18,26 @@ function getUserId(req) {
   return new mongoose.Types.ObjectId(req.userId);
 }
 
-function rangeFilter(query) {
-  const filter = {};
+// Reads startDate / endDate (YYYY-MM-DD, in the user's local time) and tzOffset from the query.
+function readRange(query) {
+  const tzOffset = parseTzOffset(query.tzOffset);
+  if (tzOffset === null) {
+    throw new ApiError(400, "tzOffset must be a whole number of minutes between -840 and 720.");
+  }
+
+  const range = {};
   if (query.startDate !== undefined) {
     const start = parseDateOnly(query.startDate);
     if (!start) throw new ApiError(400, "startDate must use a valid YYYY-MM-DD format.");
-    filter.$gte = start;
+    range.$gte = localDayStart(start, tzOffset);
   }
   if (query.endDate !== undefined) {
     const end = parseDateOnly(query.endDate);
     if (!end) throw new ApiError(400, "endDate must use a valid YYYY-MM-DD format.");
-    filter.$lt = addDaysUTC(end, 1);
+    range.$lt = localDayStart(addDaysUTC(end, 1), tzOffset);
   }
-  return Object.keys(filter).length ? { startedAt: filter } : {};
+
+  return { tzOffset, filter: Object.keys(range).length ? { startedAt: range } : {} };
 }
 
 // POST /api/focus  - log a finished session
@@ -80,7 +93,8 @@ const logSession = async (req, res, next) => {
 const listSessions = async (req, res, next) => {
   try {
     const userId = getUserId(req);
-    const sessions = await FocusSession.find({ userId, ...rangeFilter(req.query) })
+    const { filter } = readRange(req.query);
+    const sessions = await FocusSession.find({ userId, ...filter })
       .sort({ startedAt: -1 })
       .limit(1000);
     return res.status(200).json({ count: sessions.length, sessions });
@@ -93,11 +107,8 @@ const listSessions = async (req, res, next) => {
 const getSummary = async (req, res, next) => {
   try {
     const userId = getUserId(req);
-    const sessions = await FocusSession.find({
-      userId,
-      type: "focus",
-      ...rangeFilter(req.query),
-    })
+    const { tzOffset, filter } = readRange(req.query);
+    const sessions = await FocusSession.find({ userId, type: "focus", ...filter })
       .select("startedAt category durationMinutes")
       .lean();
 
@@ -106,7 +117,7 @@ const getSummary = async (req, res, next) => {
     let totalMinutes = 0;
 
     for (const session of sessions) {
-      const key = dateKey(session.startedAt);
+      const key = localDateKey(session.startedAt, tzOffset);
       perDay[key] = (perDay[key] || 0) + session.durationMinutes;
       perCategory[session.category] =
         (perCategory[session.category] || 0) + session.durationMinutes;

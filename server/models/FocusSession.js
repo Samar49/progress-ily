@@ -15,7 +15,7 @@ const focusSessionSchema = new mongoose.Schema(
     endedAt: { type: Date, required: true },
     durationMinutes: { type: Number, required: true, min: 0.1, max: 600 },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 focusSessionSchema.index({ userId: 1, startedAt: 1 });

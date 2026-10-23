@@ -16,7 +16,9 @@ export default function DayOverview({ tasks, title = "Overview" }) {
 
   const byCategory = {};
   for (const task of tasks) byCategory[task.category] = (byCategory[task.category] || 0) + 1;
-  const categories = Object.entries(byCategory).sort((a, b) => b[1] - a[1]).slice(0, 4);
+  const categories = Object.entries(byCategory)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 4);
 
   return (
     <section className="panel pi-overview">
@@ -25,7 +27,14 @@ export default function DayOverview({ tasks, title = "Overview" }) {
         <small>{percent}% done</small>
       </div>
 
-      <div className="progress-track" role="progressbar" aria-label="Completed tasks" aria-valuenow={percent} aria-valuemin={0} aria-valuemax={100}>
+      <div
+        className="progress-track"
+        role="progressbar"
+        aria-label="Completed tasks"
+        aria-valuenow={percent}
+        aria-valuemin={0}
+        aria-valuemax={100}
+      >
         <span style={{ width: `${percent}%` }} />
       </div>
       <p className="pi-overview-line">
@@ -40,7 +49,11 @@ export default function DayOverview({ tasks, title = "Overview" }) {
         {upNext ? (
           <>
             <b>{upNext.title}</b>
-            <span>{upNext.startTime ? `${formatTime12(upNext.startTime)}${upNext.endTime ? ` – ${formatTime12(upNext.endTime)}` : ""}` : "No time set"}</span>
+            <span>
+              {upNext.startTime
+                ? `${formatTime12(upNext.startTime)}${upNext.endTime ? ` – ${formatTime12(upNext.endTime)}` : ""}`
+                : "No time set"}
+            </span>
           </>
         ) : (
           <b>{total ? "All done 🎉" : "Nothing planned yet"}</b>

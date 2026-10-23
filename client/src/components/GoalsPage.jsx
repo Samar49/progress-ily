@@ -127,22 +127,74 @@ function GoalMenu({ goal, onEdit, onStatus, onDelete }) {
 
   return (
     <div className="pi-menu-wrap" ref={ref}>
-      <button type="button" className="pi-icon-btn" aria-label={`Actions for ${goal.title}`} aria-expanded={open} onClick={() => setOpen((v) => !v)}>
+      <button
+        type="button"
+        className="pi-icon-btn"
+        aria-label={`Actions for ${goal.title}`}
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
         <MoreVertical size={18} />
       </button>
       {open && (
         <div className="pi-dropdown pi-dropdown-small" role="menu">
-          <button type="button" role="menuitem" onClick={() => { setOpen(false); onEdit(goal); }}>Edit goal</button>
+          <button
+            type="button"
+            role="menuitem"
+            onClick={() => {
+              setOpen(false);
+              onEdit(goal);
+            }}
+          >
+            Edit goal
+          </button>
           {goal.status !== "Completed" && (
-            <button type="button" role="menuitem" onClick={() => { setOpen(false); onStatus(goal, "Completed"); }}>Mark completed</button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                onStatus(goal, "Completed");
+              }}
+            >
+              Mark completed
+            </button>
           )}
           {goal.status !== "On Hold" && goal.status !== "Completed" && (
-            <button type="button" role="menuitem" onClick={() => { setOpen(false); onStatus(goal, "On Hold"); }}>Put on hold</button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                onStatus(goal, "On Hold");
+              }}
+            >
+              Put on hold
+            </button>
           )}
           {(goal.status === "On Hold" || goal.status === "Completed") && (
-            <button type="button" role="menuitem" onClick={() => { setOpen(false); onStatus(goal, "Active"); }}>Reactivate</button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setOpen(false);
+                onStatus(goal, "Active");
+              }}
+            >
+              Reactivate
+            </button>
           )}
-          <button type="button" role="menuitem" className="danger" onClick={() => { setOpen(false); onDelete(goal); }}>Delete goal</button>
+          <button
+            type="button"
+            role="menuitem"
+            className="danger"
+            onClick={() => {
+              setOpen(false);
+              onDelete(goal);
+            }}
+          >
+            Delete goal
+          </button>
         </div>
       )}
     </div>
@@ -191,7 +243,11 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
     const list = goals.filter((goal) => {
       if (tab !== "All" && goal.status !== tab) return false;
       if (!query) return true;
-      return [goal.title, goal.description, goal.category].some((value) => String(value || "").toLowerCase().includes(query));
+      return [goal.title, goal.description, goal.category].some((value) =>
+        String(value || "")
+          .toLowerCase()
+          .includes(query),
+      );
     });
     return [...list].sort((a, b) => new Date(a.targetDate) - new Date(b.targetDate));
   }, [goals, tab, searchTerm]);
@@ -205,8 +261,11 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
       completed: count("Completed"),
       onHold: count("On Hold"),
       notStarted: count("Not Started"),
-      overall: goals.length ? Math.round(goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length) : 0,
-      dueThisMonth: open.filter((goal) => apiDateToString(goal.targetDate).startsWith(monthKey)).length,
+      overall: goals.length
+        ? Math.round(goals.reduce((sum, goal) => sum + goal.progress, 0) / goals.length)
+        : 0,
+      dueThisMonth: open.filter((goal) => apiDateToString(goal.targetDate).startsWith(monthKey))
+        .length,
     };
   }, [goals]);
 
@@ -217,7 +276,7 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
         value: goals.filter((goal) => goal.category === name).length,
         color: GOAL_CATEGORY_COLORS[name],
       })),
-    [goals]
+    [goals],
   );
 
   const milestones = useMemo(
@@ -226,7 +285,7 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
         .filter((goal) => goal.status !== "Completed")
         .sort((a, b) => new Date(a.targetDate) - new Date(b.targetDate))
         .slice(0, 4),
-    [goals]
+    [goals],
   );
 
   function openCreate() {
@@ -267,7 +326,8 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
 
     if (form.progressMode === "manual") {
       const value = Number(form.manualProgress);
-      if (!Number.isFinite(value) || value < 0 || value > 100) return setFormError("Progress must be between 0 and 100.");
+      if (!Number.isFinite(value) || value < 0 || value > 100)
+        return setFormError("Progress must be between 0 and 100.");
       payload.manualProgress = value;
     }
     if (form.progressMode === "measurable") {
@@ -345,32 +405,62 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
       <div className="goal-toolbar">
         <div className="goal-filters" role="tablist" aria-label="Goal status">
           {TABS.map((item) => (
-            <button type="button" role="tab" aria-selected={tab === item} key={item} className={tab === item ? "selected" : ""} onClick={() => setTab(item)}>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={tab === item}
+              key={item}
+              className={tab === item ? "selected" : ""}
+              onClick={() => setTab(item)}
+            >
               {item}
             </button>
           ))}
         </div>
-
       </div>
 
       <div className="goals-layout">
         <div className="goals-main">
           <div className="metrics goal-metrics">
             <section className="metric">
-              <span className="icon-box green"><Target size={23} /></span>
-              <div><strong>{stats.active}</strong><label>Active Goals</label><p>Keep going! 💪</p></div>
+              <span className="icon-box green">
+                <Target size={23} />
+              </span>
+              <div>
+                <strong>{stats.active}</strong>
+                <label>Active Goals</label>
+                <p>Keep going! 💪</p>
+              </div>
             </section>
             <section className="metric">
-              <span className="icon-box purple"><ChartNoAxesColumn size={23} /></span>
-              <div><strong>{stats.overall}%</strong><label>Overall Progress</label><p>Great consistency!</p></div>
+              <span className="icon-box purple">
+                <ChartNoAxesColumn size={23} />
+              </span>
+              <div>
+                <strong>{stats.overall}%</strong>
+                <label>Overall Progress</label>
+                <p>Great consistency!</p>
+              </div>
             </section>
             <section className="metric">
-              <span className="icon-box blue"><CalendarDays size={23} /></span>
-              <div><strong>{stats.dueThisMonth}</strong><label>Goals due this month</label><p>Stay on track!</p></div>
+              <span className="icon-box blue">
+                <CalendarDays size={23} />
+              </span>
+              <div>
+                <strong>{stats.dueThisMonth}</strong>
+                <label>Goals due this month</label>
+                <p>Stay on track!</p>
+              </div>
             </section>
             <section className="metric">
-              <span className="icon-box orange"><Trophy size={23} /></span>
-              <div><strong>{stats.completed}</strong><label>Completed Goals</label><p>Well done! 🎉</p></div>
+              <span className="icon-box orange">
+                <Trophy size={23} />
+              </span>
+              <div>
+                <strong>{stats.completed}</strong>
+                <label>Completed Goals</label>
+                <p>Well done! 🎉</p>
+              </div>
             </section>
           </div>
 
@@ -383,18 +473,31 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
               <EmptyState
                 icon={Target}
                 title={goals.length ? "No goals match" : "No goals yet"}
-                text={goals.length ? "Try another tab, category or search." : "Create your first goal to start tracking your progress."}
-                action={!goals.length && <button type="button" className="primary-btn" onClick={openCreate}><Plus size={18} /> Create your first goal</button>}
+                text={
+                  goals.length
+                    ? "Try another tab, category or search."
+                    : "Create your first goal to start tracking your progress."
+                }
+                action={
+                  !goals.length && (
+                    <button type="button" className="primary-btn" onClick={openCreate}>
+                      <Plus size={18} /> Create your first goal
+                    </button>
+                  )
+                }
               />
             </div>
           ) : (
             <div className="goal-list">
               {visible.map((goal) => {
                 const [Icon, tone] = CATEGORY_ICON[goal.category] || CATEGORY_ICON.Other;
-                const overdue = goal.status !== "Completed" && apiDateToString(goal.targetDate) < toDateString();
+                const overdue =
+                  goal.status !== "Completed" && apiDateToString(goal.targetDate) < toDateString();
                 return (
                   <article className="goal-card" key={goal.id}>
-                    <span className={`icon-box ${tone}`}><Icon size={26} aria-hidden="true" /></span>
+                    <span className={`icon-box ${tone}`}>
+                      <Icon size={26} aria-hidden="true" />
+                    </span>
                     <div className="goal-card-content">
                       <div className="goal-card-head">
                         <div>
@@ -403,23 +506,48 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
                         </div>
                         <div className="goal-meta">
                           <span style={overdue ? { color: "#e1242c" } : undefined}>
-                            <CalendarDays size={15} aria-hidden="true" /> {formatShort(goal.targetDate)}
+                            <CalendarDays size={15} aria-hidden="true" />{" "}
+                            {formatShort(goal.targetDate)}
                             {overdue && " (overdue)"}
                           </span>
-                          <span className={`badge ${STATUS_BADGE[goal.status] || ""}`}>{goal.status}</span>
-                          <GoalMenu goal={goal} onEdit={openEdit} onStatus={changeStatus} onDelete={setDeleting} />
+                          <span className={`badge ${STATUS_BADGE[goal.status] || ""}`}>
+                            {goal.status}
+                          </span>
+                          <GoalMenu
+                            goal={goal}
+                            onEdit={openEdit}
+                            onStatus={changeStatus}
+                            onDelete={setDeleting}
+                          />
                         </div>
                       </div>
                       <div className="goal-progress-line">
-                        <div className="progress-track" role="progressbar" aria-label={`${goal.title} progress`} aria-valuenow={goal.progress} aria-valuemin={0} aria-valuemax={100}>
+                        <div
+                          className="progress-track"
+                          role="progressbar"
+                          aria-label={`${goal.title} progress`}
+                          aria-valuenow={goal.progress}
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                        >
                           <span style={{ width: `${goal.progress}%` }} />
                         </div>
                         <b>{goal.progress}%</b>
                         <span>{captionFor(goal)}</span>
                       </div>
                       <div className="tag-row">
-                        <span className={`goal-tag ${goal.category.toLowerCase().replaceAll(" ", "-")}`}>{goal.category}</span>
-                        <span className={`goal-tag ${String(goal.term || "Medium Term").toLowerCase().replaceAll(" ", "-")}`}>{goal.term || "Medium Term"}</span>
+                        <span
+                          className={`goal-tag ${goal.category.toLowerCase().replaceAll(" ", "-")}`}
+                        >
+                          {goal.category}
+                        </span>
+                        <span
+                          className={`goal-tag ${String(goal.term || "Medium Term")
+                            .toLowerCase()
+                            .replaceAll(" ", "-")}`}
+                        >
+                          {goal.term || "Medium Term"}
+                        </span>
                       </div>
                     </div>
                   </article>
@@ -456,14 +584,25 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
           <section className="panel side-chart">
             <h3>Category Distribution</h3>
             <div className="pie-wrap">
-              <Donut label="Goals by category" center={{ value: goals.length, caption: "Goals" }} data={categoryData} />
+              <Donut
+                label="Goals by category"
+                center={{ value: goals.length, caption: "Goals" }}
+                data={categoryData}
+              />
               <div className="distribution-legend">
-                {categoryData.filter((entry) => entry.value > 0 || ["Career", "Skill Development", "Health", "Learning"].includes(entry.name)).slice(0, 5).map((entry) => (
-                  <div key={entry.name}>
-                    <i style={{ background: entry.color }} /> {entry.name}
-                    <b>{entry.value}</b>
-                  </div>
-                ))}
+                {categoryData
+                  .filter(
+                    (entry) =>
+                      entry.value > 0 ||
+                      ["Career", "Skill Development", "Health", "Learning"].includes(entry.name),
+                  )
+                  .slice(0, 5)
+                  .map((entry) => (
+                    <div key={entry.name}>
+                      <i style={{ background: entry.color }} /> {entry.name}
+                      <b>{entry.value}</b>
+                    </div>
+                  ))}
               </div>
             </div>
           </section>
@@ -477,17 +616,24 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
                 const [Icon, tone] = CATEGORY_ICON[goal.category] || CATEGORY_ICON.Other;
                 return (
                   <div className="milestone" key={goal.id}>
-                    <span className={`icon-box ${tone}`}><Icon size={18} /></span>
+                    <span className={`icon-box ${tone}`}>
+                      <Icon size={18} />
+                    </span>
                     <div>
                       <b>{goal.title}</b>
                       <small>Target date</small>
                     </div>
-                    <span>{formatShort(goal.targetDate)} <ChevronRight size={12} style={{ verticalAlign: "middle" }} /></span>
+                    <span>
+                      {formatShort(goal.targetDate)}{" "}
+                      <ChevronRight size={12} style={{ verticalAlign: "middle" }} />
+                    </span>
                   </div>
                 );
               })
             ) : (
-              <p className="pi-muted" style={{ margin: 0 }}>No upcoming milestones.</p>
+              <p className="pi-muted" style={{ margin: 0 }}>
+                No upcoming milestones.
+              </p>
             )}
           </section>
 
@@ -495,13 +641,20 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
             <Leaf size={16} />
             <strong>“{quote}”</strong>
             <small>Stay consistent. Keep going.</small>
-            <span className="mountains" aria-hidden="true">▲▲</span>
+            <span className="mountains" aria-hidden="true">
+              ▲▲
+            </span>
           </aside>
         </aside>
       </div>
 
       {modal && (
-        <Modal title={modal.goal ? "Edit goal" : "Add goal"} subtitle="Define the outcome and how progress is measured." onClose={saving ? undefined : () => setModal(null)} width={560}>
+        <Modal
+          title={modal.goal ? "Edit goal" : "Add goal"}
+          subtitle="Define the outcome and how progress is measured."
+          onClose={saving ? undefined : () => setModal(null)}
+          width={560}
+        >
           <form className="pi-form" onSubmit={submit} noValidate>
             <ErrorMessage>{formError}</ErrorMessage>
 
@@ -511,26 +664,38 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
             </label>
             <label className="field">
               Description
-              <textarea name="description" rows={2} value={form.description} onChange={updateForm} maxLength={1000} />
+              <textarea
+                name="description"
+                rows={2}
+                value={form.description}
+                onChange={updateForm}
+                maxLength={1000}
+              />
             </label>
 
             <div className="pi-grid-3">
               <label className="field">
                 Category
                 <Select name="category" value={form.category} onChange={updateForm}>
-                  {GOAL_CATEGORIES.map((item) => <option key={item}>{item}</option>)}
+                  {GOAL_CATEGORIES.map((item) => (
+                    <option key={item}>{item}</option>
+                  ))}
                 </Select>
               </label>
               <label className="field">
                 Term
                 <Select name="term" value={form.term} onChange={updateForm}>
-                  {GOAL_TERMS.map((item) => <option key={item}>{item}</option>)}
+                  {GOAL_TERMS.map((item) => (
+                    <option key={item}>{item}</option>
+                  ))}
                 </Select>
               </label>
               <label className="field">
                 Status
                 <Select name="status" value={form.status} onChange={updateForm}>
-                  {GOAL_STATUSES.map((item) => <option key={item}>{item}</option>)}
+                  {GOAL_STATUSES.map((item) => (
+                    <option key={item}>{item}</option>
+                  ))}
                 </Select>
               </label>
             </div>
@@ -551,34 +716,71 @@ export default function GoalsPage({ searchTerm = "", onClearSearch }) {
             </div>
 
             {form.progressMode === "tasks" && (
-              <p className="pi-muted">Progress = completed tasks ÷ tasks linked to this goal. Link tasks from the task form.</p>
+              <p className="pi-muted">
+                Progress = completed tasks ÷ tasks linked to this goal. Link tasks from the task
+                form.
+              </p>
             )}
             {form.progressMode === "manual" && (
               <label className="field">
                 Progress (%)
-                <input type="number" name="manualProgress" min={0} max={100} value={form.manualProgress} onChange={updateForm} />
+                <input
+                  type="number"
+                  name="manualProgress"
+                  min={0}
+                  max={100}
+                  value={form.manualProgress}
+                  onChange={updateForm}
+                />
               </label>
             )}
             {form.progressMode === "measurable" && (
               <div className="pi-grid-3">
                 <label className="field">
                   Current
-                  <input type="number" name="currentValue" min={0} value={form.currentValue} onChange={updateForm} />
+                  <input
+                    type="number"
+                    name="currentValue"
+                    min={0}
+                    value={form.currentValue}
+                    onChange={updateForm}
+                  />
                 </label>
                 <label className="field">
                   Target
-                  <input type="number" name="targetValue" min={1} value={form.targetValue} onChange={updateForm} />
+                  <input
+                    type="number"
+                    name="targetValue"
+                    min={1}
+                    value={form.targetValue}
+                    onChange={updateForm}
+                  />
                 </label>
                 <label className="field">
                   Unit
-                  <input name="unit" value={form.unit} onChange={updateForm} maxLength={30} placeholder="problems" />
+                  <input
+                    name="unit"
+                    value={form.unit}
+                    onChange={updateForm}
+                    maxLength={30}
+                    placeholder="problems"
+                  />
                 </label>
               </div>
             )}
 
             <div className="modal-actions">
-              <button type="button" className="secondary-btn" onClick={() => setModal(null)} disabled={saving}>Cancel</button>
-              <button type="submit" className="primary-btn" disabled={saving}>{saving ? "Saving..." : modal.goal ? "Save changes" : "Add goal"}</button>
+              <button
+                type="button"
+                className="secondary-btn"
+                onClick={() => setModal(null)}
+                disabled={saving}
+              >
+                Cancel
+              </button>
+              <button type="submit" className="primary-btn" disabled={saving}>
+                {saving ? "Saving..." : modal.goal ? "Save changes" : "Add goal"}
+              </button>
             </div>
           </form>
         </Modal>

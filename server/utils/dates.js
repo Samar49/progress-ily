@@ -32,9 +32,31 @@ function dateKey(value) {
   return new Date(value).toISOString().slice(0, 10);
 }
 
+// The browser sends its UTC offset (Date#getTimezoneOffset, in minutes; UTC+5:30 is -330)
+// so days can be grouped in the user's local time. Returns null when it is invalid.
+function parseTzOffset(value) {
+  if (value === undefined) return 0;
+  if (typeof value !== "string" || !/^-?\d+$/.test(value)) return null;
+  const minutes = Number(value);
+  return minutes >= -840 && minutes <= 720 ? minutes : null;
+}
+
+// The exact moment a local calendar day starts, for a date-only value stored at UTC midnight.
+function localDayStart(dateOnly, tzOffsetMinutes = 0) {
+  return new Date(dateOnly.getTime() + tzOffsetMinutes * 60000);
+}
+
+// The local "YYYY-MM-DD" a moment falls on.
+function localDateKey(value, tzOffsetMinutes = 0) {
+  return new Date(new Date(value).getTime() - tzOffsetMinutes * 60000).toISOString().slice(0, 10);
+}
+
 module.exports = {
   parseDateOnly,
   parseFlexibleDate,
   addDaysUTC,
   dateKey,
+  parseTzOffset,
+  localDayStart,
+  localDateKey,
 };

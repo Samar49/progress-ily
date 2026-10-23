@@ -4,7 +4,15 @@ import { createPortal } from "react-dom";
 // Themed pop-over rendered in the .app element (so it inherits light/dark
 // variables) and positioned next to its trigger. Closes on outside click,
 // scroll, resize and Escape.
-export default function FloatingPanel({ anchorRef, open, onClose, children, width = 300, className = "", label }) {
+export default function FloatingPanel({
+  anchorRef,
+  open,
+  onClose,
+  children,
+  width = 300,
+  className = "",
+  label,
+}) {
   const panelRef = useRef(null);
   const [style, setStyle] = useState(null);
 
@@ -32,7 +40,8 @@ export default function FloatingPanel({ anchorRef, open, onClose, children, widt
   useEffect(() => {
     if (!open) return undefined;
     function onDown(event) {
-      if (anchorRef.current?.contains(event.target) || panelRef.current?.contains(event.target)) return;
+      if (anchorRef.current?.contains(event.target) || panelRef.current?.contains(event.target))
+        return;
       onClose();
     }
     function onScroll(event) {
@@ -69,6 +78,6 @@ export default function FloatingPanel({ anchorRef, open, onClose, children, widt
     >
       {children}
     </div>,
-    host
+    host,
   );
 }

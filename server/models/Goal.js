@@ -68,7 +68,7 @@ const goalSchema = new mongoose.Schema(
       default: "",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 goalSchema.index({ userId: 1, targetDate: 1 });

@@ -70,7 +70,15 @@ function Donut({ percent }) {
   return (
     <div style={{ width: 70, height: 70, flexShrink: 0 }} aria-hidden="true">
       <PieChart width={70} height={70}>
-        <Pie data={data} dataKey="value" innerRadius={24} outerRadius={34} startAngle={90} endAngle={-270} stroke="none">
+        <Pie
+          data={data}
+          dataKey="value"
+          innerRadius={24}
+          outerRadius={34}
+          startAngle={90}
+          endAngle={-270}
+          stroke="none"
+        >
           <Cell fill="#07865c" />
           <Cell fill="rgba(120,160,150,0.28)" />
         </Pie>
@@ -140,7 +148,9 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
     const minutesFor = (day) =>
       hasFocus
         ? focusPerDay.get(day) || 0
-        : tasks.filter((task) => dayOf(task) === day && task.status === "Completed").reduce((sum, task) => sum + taskMinutes(task), 0);
+        : tasks
+            .filter((task) => dayOf(task) === day && task.status === "Completed")
+            .reduce((sum, task) => sum + taskMinutes(task), 0);
 
     const weekStart = startOfWeek(selectedDate);
     const week = WEEKDAYS.map((label, index) => {
@@ -179,10 +189,24 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
     const deadlines = [
       ...tasks
         .filter((task) => task.status !== "Completed" && dayOf(task) >= selectedDate)
-        .map((task) => ({ id: `t-${task.id}`, title: task.title, date: dayOf(task), badge: task.priority, kind: "task" })),
+        .map((task) => ({
+          id: `t-${task.id}`,
+          title: task.title,
+          date: dayOf(task),
+          badge: task.priority,
+          kind: "task",
+        })),
       ...goals
-        .filter((goal) => goal.status !== "Completed" && apiDateToString(goal.targetDate) >= selectedDate)
-        .map((goal) => ({ id: `g-${goal.id}`, title: goal.title, date: apiDateToString(goal.targetDate), badge: "Goal", kind: "goal" })),
+        .filter(
+          (goal) => goal.status !== "Completed" && apiDateToString(goal.targetDate) >= selectedDate,
+        )
+        .map((goal) => ({
+          id: `g-${goal.id}`,
+          title: goal.title,
+          date: apiDateToString(goal.targetDate),
+          badge: "Goal",
+          kind: "goal",
+        })),
     ]
       .sort((a, b) => a.date.localeCompare(b.date))
       .slice(0, 4);
@@ -204,7 +228,9 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
     };
   }, [tasks, goals, focus, selectedDate]);
 
-  const activeGoals = goals.filter((goal) => goal.status === "Active" || goal.status === "Not Started");
+  const activeGoals = goals.filter(
+    (goal) => goal.status === "Active" || goal.status === "Not Started",
+  );
   const goalsDone = goals.filter((goal) => goal.status === "Completed").length;
   const goalsPercent = goals.length ? Math.round((goalsDone / goals.length) * 100) : 0;
 
@@ -212,7 +238,11 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
   const visibleTasks = data.todays.filter(
     (task) =>
       !query ||
-      [task.title, task.category, task.notes].some((value) => String(value || "").toLowerCase().includes(query))
+      [task.title, task.category, task.notes].some((value) =>
+        String(value || "")
+          .toLowerCase()
+          .includes(query),
+      ),
   );
 
   async function toggle(task) {
@@ -239,24 +269,46 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
         <section className="welcome" style={{ margin: 0 }}>
           <h1>
             {greeting}
-            {firstName ? `, ${firstName}!` : "!"} <span className="sun-emoji" aria-hidden="true">☀️</span>
+            {firstName ? `, ${firstName}!` : "!"}{" "}
+            <span className="sun-emoji" aria-hidden="true">
+              ☀️
+            </span>
           </h1>
           <p>Small steps today, big progress tomorrow.</p>
         </section>
 
         <div className="pi-title-actions">
           <div className="date-controls" role="group" aria-label="Select date">
-            <button type="button" className="square-btn" onClick={() => setSelectedDate(addDays(selectedDate, -1))} aria-label="Previous day">
+            <button
+              type="button"
+              className="square-btn"
+              onClick={() => setSelectedDate(addDays(selectedDate, -1))}
+              aria-label="Previous day"
+            >
               <ChevronLeft size={18} />
             </button>
-            <button type="button" className="date-label" onClick={() => setSelectedDate(toDateString())} title="Jump to today">
+            <button
+              type="button"
+              className="date-label"
+              onClick={() => setSelectedDate(toDateString())}
+              title="Jump to today"
+            >
               <b>{formatLong(selectedDate)}</b>
             </button>
-            <button type="button" className="square-btn" onClick={() => setSelectedDate(addDays(selectedDate, 1))} aria-label="Next day">
+            <button
+              type="button"
+              className="square-btn"
+              onClick={() => setSelectedDate(addDays(selectedDate, 1))}
+              aria-label="Next day"
+            >
               <ChevronRight size={18} />
             </button>
           </div>
-          <button type="button" className="primary-btn" onClick={() => openTaskDialog(null, { date: selectedDate })}>
+          <button
+            type="button"
+            className="primary-btn"
+            onClick={() => openTaskDialog(null, { date: selectedDate })}
+          >
             <Plus size={18} /> Add Task
           </button>
         </div>
@@ -270,13 +322,46 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
       ) : (
         <>
           <section className="metrics four">
-            <Metric title={isToday ? "Today's Progress" : "Day Progress"} value={`${data.percent}%`} sub={`${data.done} of ${data.todays.length} tasks completed`}>
-              <span className="pi-metric-donut"><Donut percent={data.percent} /></span>
+            <Metric
+              title={isToday ? "Today's Progress" : "Day Progress"}
+              value={`${data.percent}%`}
+              sub={`${data.done} of ${data.todays.length} tasks completed`}
+            >
+              <span className="pi-metric-donut">
+                <Donut percent={data.percent} />
+              </span>
             </Metric>
-            <Metric title="Total Tasks" value={data.todays.length} sub={data.totalDelta.text} subTone={data.totalDelta.tone} icon={ListTodo} tone="green" />
-            <Metric title={data.focusLabel} value={formatHours(data.focusMinutes)} sub={data.focusDelta.text} subTone={data.focusDelta.tone} icon={Clock3} tone="blue" />
-            <Metric title="Goals Progress" value={`${goalsDone} / ${goals.length}`} sub={goals.length ? `${goalsPercent}% of goals completed` : "No goals yet"} icon={Target} tone="purple">
-              <div className="progress-track" role="progressbar" aria-label="Goals completed" aria-valuenow={goalsPercent} aria-valuemin={0} aria-valuemax={100}>
+            <Metric
+              title="Total Tasks"
+              value={data.todays.length}
+              sub={data.totalDelta.text}
+              subTone={data.totalDelta.tone}
+              icon={ListTodo}
+              tone="green"
+            />
+            <Metric
+              title={data.focusLabel}
+              value={formatHours(data.focusMinutes)}
+              sub={data.focusDelta.text}
+              subTone={data.focusDelta.tone}
+              icon={Clock3}
+              tone="blue"
+            />
+            <Metric
+              title="Goals Progress"
+              value={`${goalsDone} / ${goals.length}`}
+              sub={goals.length ? `${goalsPercent}% of goals completed` : "No goals yet"}
+              icon={Target}
+              tone="purple"
+            >
+              <div
+                className="progress-track"
+                role="progressbar"
+                aria-label="Goals completed"
+                aria-valuenow={goalsPercent}
+                aria-valuemin={0}
+                aria-valuemax={100}
+              >
                 <span style={{ width: `${goalsPercent}%` }} />
               </div>
             </Metric>
@@ -288,21 +373,51 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
                 <h3>Task Completion Trend</h3>
                 <span className="select-like">This Week</span>
               </div>
-              <div className="chart" role="img" aria-label="Completed and pending tasks per day this week">
+              <div
+                className="chart"
+                role="img"
+                aria-label="Completed and pending tasks per day this week"
+              >
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={data.week} margin={{ top: 4, right: 4, left: -22, bottom: 0 }}>
                     <CartesianGrid vertical={false} stroke="var(--grid)" />
-                    <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "var(--muted)" }} />
-                    <YAxis allowDecimals={false} tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "var(--muted)" }} />
+                    <XAxis
+                      dataKey="label"
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fontSize: 11, fill: "var(--muted)" }}
+                    />
+                    <YAxis
+                      allowDecimals={false}
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fontSize: 11, fill: "var(--muted)" }}
+                    />
                     <Tooltip cursor={{ fill: "rgba(7,134,92,.06)" }} />
-                    <Bar dataKey="completed" name="Completed" stackId="a" fill="#07865c" radius={[0, 0, 0, 0]} />
-                    <Bar dataKey="pending" name="Pending" stackId="a" fill="var(--border)" radius={[4, 4, 0, 0]} />
+                    <Bar
+                      dataKey="completed"
+                      name="Completed"
+                      stackId="a"
+                      fill="#07865c"
+                      radius={[0, 0, 0, 0]}
+                    />
+                    <Bar
+                      dataKey="pending"
+                      name="Pending"
+                      stackId="a"
+                      fill="var(--border)"
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
               <div className="legend centered">
-                <span><i className="green-dot" /> Completed</span>
-                <span><i className="gray-dot" /> Pending</span>
+                <span>
+                  <i className="green-dot" /> Completed
+                </span>
+                <span>
+                  <i className="gray-dot" /> Pending
+                </span>
               </div>
             </div>
 
@@ -316,9 +431,18 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
                   <div className="pie" role="img" aria-label="Time spent by category this week">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
-                        <Pie data={data.distribution} dataKey="minutes" innerRadius="62%" outerRadius="92%" stroke="none">
+                        <Pie
+                          data={data.distribution}
+                          dataKey="minutes"
+                          innerRadius="62%"
+                          outerRadius="92%"
+                          stroke="none"
+                        >
                           {data.distribution.map((entry) => (
-                            <Cell key={entry.name} fill={CATEGORY_COLORS[entry.name] || "#94a3b8"} />
+                            <Cell
+                              key={entry.name}
+                              fill={CATEGORY_COLORS[entry.name] || "#94a3b8"}
+                            />
                           ))}
                         </Pie>
                       </PieChart>
@@ -339,7 +463,10 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
                   </div>
                 </div>
               ) : (
-                <EmptyState title="No time tracked yet" text="Complete timed tasks or use the Focus Timer." />
+                <EmptyState
+                  title="No time tracked yet"
+                  text="Complete timed tasks or use the Focus Timer."
+                />
               )}
             </div>
 
@@ -358,10 +485,27 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
                       </linearGradient>
                     </defs>
                     <CartesianGrid vertical={false} stroke="var(--grid)" />
-                    <XAxis dataKey="label" tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "var(--muted)" }} />
-                    <YAxis tickLine={false} axisLine={false} tick={{ fontSize: 11, fill: "var(--muted)" }} tickFormatter={(v) => `${v}h`} />
+                    <XAxis
+                      dataKey="label"
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fontSize: 11, fill: "var(--muted)" }}
+                    />
+                    <YAxis
+                      tickLine={false}
+                      axisLine={false}
+                      tick={{ fontSize: 11, fill: "var(--muted)" }}
+                      tickFormatter={(v) => `${v}h`}
+                    />
                     <Tooltip formatter={(value) => [`${value}h`, "Focus"]} />
-                    <Area type="monotone" dataKey="hours" stroke="#07865c" strokeWidth={2} fill="url(#focusFill)" dot={{ r: 3, fill: "#07865c" }} />
+                    <Area
+                      type="monotone"
+                      dataKey="hours"
+                      stroke="#07865c"
+                      strokeWidth={2}
+                      fill="url(#focusFill)"
+                      dot={{ r: 3, fill: "#07865c" }}
+                    />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -381,7 +525,9 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
                 compact
                 onToggle={toggle}
                 busyId={busyId}
-                emptyText={query ? "No tasks match your search." : "No tasks scheduled for this day."}
+                emptyText={
+                  query ? "No tasks match your search." : "No tasks scheduled for this day."
+                }
               />
             </div>
 
@@ -402,7 +548,9 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
                       <b>{item.title}</b>
                       <small>{formatShort(item.date)}</small>
                     </div>
-                    <Badge tone={item.badge === "Goal" ? "cat-global" : item.badge.toLowerCase()}>{item.badge}</Badge>
+                    <Badge tone={item.badge === "Goal" ? "cat-global" : item.badge.toLowerCase()}>
+                      {item.badge}
+                    </Badge>
                   </div>
                 ))
               ) : (
@@ -422,14 +570,18 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
               {activeGoals.slice(0, 4).map((goal) => (
                 <article className="goal-mini" key={goal.id}>
                   <div className="mini-top">
-                    <span className="icon-box green"><Target size={19} /></span>
+                    <span className="icon-box green">
+                      <Target size={19} />
+                    </span>
                     <div>
                       <b>{goal.title}</b>
                       <small>{goal.description || goal.category}</small>
                     </div>
                   </div>
                   <div className="mini-progress">
-                    <div className="progress-track"><span style={{ width: `${goal.progress}%` }} /></div>
+                    <div className="progress-track">
+                      <span style={{ width: `${goal.progress}%` }} />
+                    </div>
                     <b>{goal.progress}%</b>
                   </div>
                   <small>
@@ -445,14 +597,24 @@ export default function Dashboard({ user, searchTerm = "", onClearSearch }) {
                     icon={Target}
                     title="No active goals yet"
                     text="Create a goal to track longer-term progress."
-                    action={<button type="button" className="primary-btn" onClick={() => navigate("/goals")}>Create a goal</button>}
+                    action={
+                      <button
+                        type="button"
+                        className="primary-btn"
+                        onClick={() => navigate("/goals")}
+                      >
+                        Create a goal
+                      </button>
+                    }
                   />
                 </div>
               )}
               <aside className="quote-card" aria-label="Quote">
                 <Leaf size={16} />
                 <strong>“{quote}”</strong>
-                <span className="mountains" aria-hidden="true">▲▲</span>
+                <span className="mountains" aria-hidden="true">
+                  ▲▲
+                </span>
               </aside>
             </div>
           </section>

@@ -25,12 +25,23 @@ function join24(hour12, minute, period) {
 function centerInColumn(button) {
   const column = button?.parentElement;
   if (!column) return;
-  const offset = button.getBoundingClientRect().top - column.getBoundingClientRect().top - (column.clientHeight - button.clientHeight) / 2;
+  const offset =
+    button.getBoundingClientRect().top -
+    column.getBoundingClientRect().top -
+    (column.clientHeight - button.clientHeight) / 2;
   const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   column.scrollTo({ top: column.scrollTop + offset, behavior: reduce ? "auto" : "smooth" });
 }
 
-export default function TimePicker({ name, value, onChange, disabled = false, id, placeholder = "--:-- --", "aria-label": ariaLabel }) {
+export default function TimePicker({
+  name,
+  value,
+  onChange,
+  disabled = false,
+  id,
+  placeholder = "--:-- --",
+  "aria-label": ariaLabel,
+}) {
   const anchorRef = useRef(null);
   const panelBodyRef = useRef(null);
   const scrollAfterChange = useRef(false);
@@ -49,7 +60,10 @@ export default function TimePicker({ name, value, onChange, disabled = false, id
   useEffect(() => {
     if (!open) return;
     scrollToSelected();
-    (panelBodyRef.current?.querySelector("[data-selected='true']") || panelBodyRef.current?.querySelector("button"))?.focus({ preventScroll: true });
+    (
+      panelBodyRef.current?.querySelector("[data-selected='true']") ||
+      panelBodyRef.current?.querySelector("button")
+    )?.focus({ preventScroll: true });
   }, [open, scrollToSelected]);
 
   // "Now" changes the value while the panel is open, so scroll once the new selection has rendered.
@@ -73,7 +87,9 @@ export default function TimePicker({ name, value, onChange, disabled = false, id
   }
 
   function choosePeriod(p) {
-    const base = hour ? { hour, minute: minute || "00" } : { hour: split24(toNow()).hour, minute: "00" };
+    const base = hour
+      ? { hour, minute: minute || "00" }
+      : { hour: split24(toNow()).hour, minute: "00" };
     emit(join24(base.hour, base.minute, p));
   }
 
@@ -96,12 +112,14 @@ export default function TimePicker({ name, value, onChange, disabled = false, id
   function onKey(event, column, index) {
     const find = (col) => [...panelBodyRef.current.querySelectorAll(`[data-col="${col}"]`)];
     const buttons = find(column);
-    const pickSelected = (col) => find(col).find((node) => node.dataset.selected === "true") || find(col)[0];
+    const pickSelected = (col) =>
+      find(col).find((node) => node.dataset.selected === "true") || find(col)[0];
     const at = COLUMNS.indexOf(column);
     let target = null;
     if (event.key === "ArrowDown") target = buttons[Math.min(buttons.length - 1, index + 1)];
     else if (event.key === "ArrowUp") target = buttons[Math.max(0, index - 1)];
-    else if (event.key === "ArrowRight" && at < COLUMNS.length - 1) target = pickSelected(COLUMNS[at + 1]);
+    else if (event.key === "ArrowRight" && at < COLUMNS.length - 1)
+      target = pickSelected(COLUMNS[at + 1]);
     else if (event.key === "ArrowLeft" && at > 0) target = pickSelected(COLUMNS[at - 1]);
     if (target) {
       event.preventDefault();
@@ -132,12 +150,27 @@ export default function TimePicker({ name, value, onChange, disabled = false, id
         <Clock3 size={16} aria-hidden="true" />
       </button>
 
-      <FloatingPanel anchorRef={anchorRef} open={open} onClose={close} width={230} label="Choose a time" className="pi-timepanel">
+      <FloatingPanel
+        anchorRef={anchorRef}
+        open={open}
+        onClose={close}
+        width={230}
+        label="Choose a time"
+        className="pi-timepanel"
+      >
         <div className="pi-tp-cols" ref={panelBodyRef}>
           <div className="pi-tp-col" role="listbox" aria-label="Hours">
             <span className="pi-tp-title">Hour</span>
             {HOURS.map((h, index) => (
-              <button type="button" key={h} data-col="h" data-selected={h === hour} className={h === hour ? "selected" : ""} onClick={() => chooseHour(h)} onKeyDown={(event) => onKey(event, "h", index)}>
+              <button
+                type="button"
+                key={h}
+                data-col="h"
+                data-selected={h === hour}
+                className={h === hour ? "selected" : ""}
+                onClick={() => chooseHour(h)}
+                onKeyDown={(event) => onKey(event, "h", index)}
+              >
                 {h}
               </button>
             ))}
@@ -145,7 +178,15 @@ export default function TimePicker({ name, value, onChange, disabled = false, id
           <div className="pi-tp-col" role="listbox" aria-label="Minutes">
             <span className="pi-tp-title">Min</span>
             {minutes.map((m, index) => (
-              <button type="button" key={m} data-col="m" data-selected={m === minute} className={m === minute ? "selected" : ""} onClick={() => chooseMinute(m)} onKeyDown={(event) => onKey(event, "m", index)}>
+              <button
+                type="button"
+                key={m}
+                data-col="m"
+                data-selected={m === minute}
+                className={m === minute ? "selected" : ""}
+                onClick={() => chooseMinute(m)}
+                onKeyDown={(event) => onKey(event, "m", index)}
+              >
                 {m}
               </button>
             ))}
@@ -153,16 +194,43 @@ export default function TimePicker({ name, value, onChange, disabled = false, id
           <div className="pi-tp-col" role="listbox" aria-label="AM or PM">
             <span className="pi-tp-title">AM/PM</span>
             {PERIODS.map((p, index) => (
-              <button type="button" key={p} data-col="p" data-selected={p === period} className={p === period ? "selected" : ""} onClick={() => choosePeriod(p)} onKeyDown={(event) => onKey(event, "p", index)}>
+              <button
+                type="button"
+                key={p}
+                data-col="p"
+                data-selected={p === period}
+                className={p === period ? "selected" : ""}
+                onClick={() => choosePeriod(p)}
+                onKeyDown={(event) => onKey(event, "p", index)}
+              >
                 {p}
               </button>
             ))}
           </div>
         </div>
         <div className="pi-dp-foot">
-          <button type="button" onClick={() => { emit(""); close(); }}>Clear</button>
-          <button type="button" onClick={setNow}>Now</button>
-          <button type="button" className="pi-done" onClick={() => { close(); anchorRef.current?.focus(); }}>Done</button>
+          <button
+            type="button"
+            onClick={() => {
+              emit("");
+              close();
+            }}
+          >
+            Clear
+          </button>
+          <button type="button" onClick={setNow}>
+            Now
+          </button>
+          <button
+            type="button"
+            className="pi-done"
+            onClick={() => {
+              close();
+              anchorRef.current?.focus();
+            }}
+          >
+            Done
+          </button>
         </div>
       </FloatingPanel>
     </>

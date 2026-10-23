@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import {
   Activity,
@@ -44,7 +43,6 @@ function getErrorMessage(error) {
   );
 }
 
-
 function Metric({ title, value, detail, icon: Icon, tone }) {
   return (
     <article className="metric">
@@ -74,10 +72,7 @@ function EmptyState({ message }) {
       }}
     >
       <div>
-        <Activity
-          size={28}
-          style={{ marginBottom: 8, opacity: 0.65 }}
-        />
+        <Activity size={28} style={{ marginBottom: 8, opacity: 0.65 }} />
         <p style={{ margin: 0 }}>{message}</p>
       </div>
     </div>
@@ -160,27 +155,17 @@ export default function AnalyticsPage() {
     value: item.count,
   }));
 
-  const activeGoals = goals.filter(
-    (goal) => goal.status === "Active"
-  );
+  const activeGoals = goals.filter((goal) => goal.status === "Active");
 
   return (
     <main className="content">
       <div className="page-title">
         <div>
           <h1>Analytics</h1>
-          <p>
-            Understand your productivity through your saved tasks
-            and goals.
-          </p>
+          <p>Understand your productivity through your saved tasks and goals.</p>
         </div>
 
-        <button
-          type="button"
-          className="primary-button"
-          onClick={loadAnalytics}
-          disabled={loading}
-        >
+        <button type="button" className="primary-button" onClick={loadAnalytics} disabled={loading}>
           <RefreshCw size={16} />
           {loading ? "Loading..." : "Refresh data"}
         </button>
@@ -235,18 +220,10 @@ export default function AnalyticsPage() {
       </section>
 
       {error && (
-        <div
-          className="feedback-message error"
-          role="alert"
-          style={{ marginBottom: 20 }}
-        >
+        <div className="feedback-message error" role="alert" style={{ marginBottom: 20 }}>
           <AlertCircle size={18} />
           <p>{error}</p>
-          <button
-            type="button"
-            onClick={loadAnalytics}
-            disabled={loading}
-          >
+          <button type="button" onClick={loadAnalytics} disabled={loading}>
             Try again
           </button>
         </div>
@@ -292,10 +269,7 @@ export default function AnalyticsPage() {
             />
           </section>
 
-          <section
-            className="chart-grid"
-            style={{ marginTop: 20 }}
-          >
+          <section className="chart-grid" style={{ marginTop: 20 }}>
             <article className="panel chart-panel">
               <div className="panel-heading">
                 <div>
@@ -326,22 +300,11 @@ export default function AnalyticsPage() {
                         bottom: 0,
                       }}
                     >
-                      <CartesianGrid
-                        strokeDasharray="3 3"
-                        stroke="var(--border)"
-                      />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
 
-                      <XAxis
-                        dataKey="label"
-                        tickLine={false}
-                        axisLine={false}
-                      />
+                      <XAxis dataKey="label" tickLine={false} axisLine={false} />
 
-                      <YAxis
-                        allowDecimals={false}
-                        tickLine={false}
-                        axisLine={false}
-                      />
+                      <YAxis allowDecimals={false} tickLine={false} axisLine={false} />
 
                       <Tooltip />
                       <Legend />
@@ -404,20 +367,13 @@ export default function AnalyticsPage() {
                         {categoryData.map((item, index) => (
                           <Cell
                             key={item.name}
-                            fill={
-                              CATEGORY_COLORS[
-                                index % CATEGORY_COLORS.length
-                              ]
-                            }
+                            fill={CATEGORY_COLORS[index % CATEGORY_COLORS.length]}
                           />
                         ))}
                       </Pie>
 
                       <Tooltip />
-                      <Legend
-                        verticalAlign="bottom"
-                        height={36}
-                      />
+                      <Legend verticalAlign="bottom" height={36} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -425,10 +381,7 @@ export default function AnalyticsPage() {
             </article>
           </section>
 
-          <section
-            className="chart-grid"
-            style={{ marginTop: 20 }}
-          >
+          <section className="chart-grid" style={{ marginTop: 20 }}>
             <article className="panel chart-panel">
               <div className="panel-heading">
                 <div>
@@ -541,9 +494,7 @@ export default function AnalyticsPage() {
                   Average progress across active goals
                 </p>
 
-                <strong style={{ fontSize: 30 }}>
-                  {summary?.averageActiveGoalProgress ?? 0}%
-                </strong>
+                <strong style={{ fontSize: 30 }}>{summary?.averageActiveGoalProgress ?? 0}%</strong>
               </div>
 
               <div
@@ -563,10 +514,7 @@ export default function AnalyticsPage() {
             </article>
           </section>
 
-          <section
-            className="panel"
-            style={{ marginTop: 20, padding: 22 }}
-          >
+          <section className="panel" style={{ marginTop: 20, padding: 22 }}>
             <div className="panel-heading">
               <div>
                 <h2>Active goal progress</h2>
@@ -584,16 +532,12 @@ export default function AnalyticsPage() {
 
             {activeGoals.length === 0 ? (
               <p style={{ color: "var(--muted)" }}>
-                You have no active goals yet. Create a goal to
-                start tracking long-term progress.
+                You have no active goals yet. Create a goal to start tracking long-term progress.
               </p>
             ) : (
               <div style={{ display: "grid", gap: 18, marginTop: 18 }}>
                 {activeGoals.map((goal) => {
-                  const progress = Math.min(
-                    100,
-                    Math.max(0, Number(goal.progress) || 0)
-                  );
+                  const progress = Math.min(100, Math.max(0, Number(goal.progress) || 0));
 
                   return (
                     <div key={goal.id}>
@@ -605,9 +549,7 @@ export default function AnalyticsPage() {
                           marginBottom: 7,
                         }}
                       >
-                        <strong style={{ overflowWrap: "anywhere" }}>
-                          {goal.title}
-                        </strong>
+                        <strong style={{ overflowWrap: "anywhere" }}>{goal.title}</strong>
 
                         <span
                           style={{

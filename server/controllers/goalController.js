@@ -125,7 +125,8 @@ const getGoals = async (req, res, next) => {
       filter.status = status;
     }
     if (category !== undefined) {
-      if (!Goal.CATEGORIES.includes(category)) throw new ApiError(400, "Unsupported category filter.");
+      if (!Goal.CATEGORIES.includes(category))
+        throw new ApiError(400, "Unsupported category filter.");
       filter.category = category;
     }
     if (sort !== "progress" && !SORTS[sort]) {
@@ -133,7 +134,10 @@ const getGoals = async (req, res, next) => {
     }
 
     const goals = await Goal.find(filter).sort(SORTS[sort] || SORTS.targetDate);
-    const stats = await statsFor(userId, goals.map((goal) => goal._id));
+    const stats = await statsFor(
+      userId,
+      goals.map((goal) => goal._id),
+    );
 
     let result = goals.map((goal) => present(goal, stats.get(String(goal._id))));
     if (sort === "progress") result = result.sort((a, b) => b.progress - a.progress);
@@ -209,9 +213,7 @@ const deleteGoal = async (req, res, next) => {
     await Task.updateMany({ userId, goalId: goal._id }, { $set: { goalId: null } });
     await Goal.deleteOne({ _id: goal._id, userId });
 
-    return res
-      .status(200)
-      .json({ message: "Goal deleted successfully.", id: String(goal._id) });
+    return res.status(200).json({ message: "Goal deleted successfully.", id: String(goal._id) });
   } catch (error) {
     return next(error);
   }

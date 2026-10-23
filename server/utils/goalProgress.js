@@ -28,9 +28,7 @@ function computeGoalProgress(goal, stats) {
     return clamp(goal.manualProgress);
   }
 
-  return total > 0
-    ? clamp((completed / total) * 100)
-    : clamp(goal.manualProgress);
+  return total > 0 ? clamp((completed / total) * 100) : clamp(goal.manualProgress);
 }
 
 module.exports = { computeGoalProgress, clamp };

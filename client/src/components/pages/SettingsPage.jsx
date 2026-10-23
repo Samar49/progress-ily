@@ -19,7 +19,11 @@ function Section({ title, text, children }) {
 
 export default function SettingsPage({ user, onUserChange, theme, setTheme, onAccountDeleted }) {
   const [name, setName] = useState(user?.name || "");
-  const [category, setCategory] = useState(CATEGORIES.includes(user?.preferences?.defaultCategory) ? user.preferences.defaultCategory : "Personal");
+  const [category, setCategory] = useState(
+    CATEGORIES.includes(user?.preferences?.defaultCategory)
+      ? user.preferences.defaultCategory
+      : "Personal",
+  );
   const [view, setView] = useState(user?.preferences?.defaultView || "Day");
   const [profileMsg, setProfileMsg] = useState({ error: "", ok: "" });
   const [savingProfile, setSavingProfile] = useState(false);
@@ -39,7 +43,10 @@ export default function SettingsPage({ user, onUserChange, theme, setTheme, onAc
     if (!name.trim()) return setProfileMsg({ error: "Name cannot be empty.", ok: "" });
     setSavingProfile(true);
     try {
-      const updated = await updateProfile({ name: name.trim(), preferences: { defaultCategory: category, defaultView: view } });
+      const updated = await updateProfile({
+        name: name.trim(),
+        preferences: { defaultCategory: category, defaultView: view },
+      });
       onUserChange(updated);
       localStorage.setItem("progressily_planner_view", JSON.stringify(view));
       setProfileMsg({ error: "", ok: "Settings saved." });
@@ -53,8 +60,10 @@ export default function SettingsPage({ user, onUserChange, theme, setTheme, onAc
   async function savePassword(event) {
     event.preventDefault();
     setPasswordMsg({ error: "", ok: "" });
-    if (passwords.next.length < 8) return setPasswordMsg({ error: "New password must be at least 8 characters.", ok: "" });
-    if (passwords.next !== passwords.confirm) return setPasswordMsg({ error: "New passwords do not match.", ok: "" });
+    if (passwords.next.length < 8)
+      return setPasswordMsg({ error: "New password must be at least 8 characters.", ok: "" });
+    if (passwords.next !== passwords.confirm)
+      return setPasswordMsg({ error: "New passwords do not match.", ok: "" });
     setSavingPassword(true);
     try {
       await changePassword(passwords.current, passwords.next);
@@ -93,19 +102,29 @@ export default function SettingsPage({ user, onUserChange, theme, setTheme, onAc
         <form className="pi-form" onSubmit={saveProfile} noValidate>
           <ErrorMessage>{profileMsg.error}</ErrorMessage>
           <SuccessMessage>{profileMsg.ok}</SuccessMessage>
-          <label className="field">Name<input value={name} onChange={(event) => setName(event.target.value)} maxLength={80} /></label>
-          <label className="field">Email<input value={user?.email || ""} readOnly aria-readonly="true" /></label>
+          <label className="field">
+            Name
+            <input value={name} onChange={(event) => setName(event.target.value)} maxLength={80} />
+          </label>
+          <label className="field">
+            Email
+            <input value={user?.email || ""} readOnly aria-readonly="true" />
+          </label>
           <div className="pi-grid-2">
             <label className="field">
               Default task category
               <Select value={category} onChange={(event) => setCategory(event.target.value)}>
-                {CATEGORIES.map((item) => <option key={item}>{item}</option>)}
+                {CATEGORIES.map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
               </Select>
             </label>
             <label className="field">
               Default planner view
               <Select value={view} onChange={(event) => setView(event.target.value)}>
-                {["Day", "Week", "Month"].map((item) => <option key={item}>{item}</option>)}
+                {["Day", "Week", "Month"].map((item) => (
+                  <option key={item}>{item}</option>
+                ))}
               </Select>
             </label>
           </div>
@@ -117,7 +136,11 @@ export default function SettingsPage({ user, onUserChange, theme, setTheme, onAc
               <option value="system">System (match device)</option>
             </Select>
           </label>
-          <div><button type="submit" className="primary-btn" disabled={savingProfile}>{savingProfile ? "Saving..." : "Save changes"}</button></div>
+          <div>
+            <button type="submit" className="primary-btn" disabled={savingProfile}>
+              {savingProfile ? "Saving..." : "Save changes"}
+            </button>
+          </div>
         </form>
       </Section>
 
@@ -125,21 +148,79 @@ export default function SettingsPage({ user, onUserChange, theme, setTheme, onAc
         <form className="pi-form" onSubmit={savePassword} noValidate>
           <ErrorMessage>{passwordMsg.error}</ErrorMessage>
           <SuccessMessage>{passwordMsg.ok}</SuccessMessage>
-          <label className="field">Current password<input type="password" autoComplete="current-password" value={passwords.current} onChange={(event) => setPasswords({ ...passwords, current: event.target.value })} /></label>
+          <label className="field">
+            Current password
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={passwords.current}
+              onChange={(event) => setPasswords({ ...passwords, current: event.target.value })}
+            />
+          </label>
           <div className="pi-grid-2">
-            <label className="field">New password<input type="password" autoComplete="new-password" value={passwords.next} onChange={(event) => setPasswords({ ...passwords, next: event.target.value })} /></label>
-            <label className="field">Confirm new password<input type="password" autoComplete="new-password" value={passwords.confirm} onChange={(event) => setPasswords({ ...passwords, confirm: event.target.value })} /></label>
+            <label className="field">
+              New password
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={passwords.next}
+                onChange={(event) => setPasswords({ ...passwords, next: event.target.value })}
+              />
+            </label>
+            <label className="field">
+              Confirm new password
+              <input
+                type="password"
+                autoComplete="new-password"
+                value={passwords.confirm}
+                onChange={(event) => setPasswords({ ...passwords, confirm: event.target.value })}
+              />
+            </label>
           </div>
-          <div><button type="submit" className="primary-btn" disabled={savingPassword || !passwords.current}>{savingPassword ? "Updating..." : "Update password"}</button></div>
+          <div>
+            <button
+              type="submit"
+              className="primary-btn"
+              disabled={savingPassword || !passwords.current}
+            >
+              {savingPassword ? "Updating..." : "Update password"}
+            </button>
+          </div>
         </form>
       </Section>
 
-      <Section title="Delete account" text="Permanently removes your account, tasks, goals and focus sessions. This cannot be undone.">
+      <Section
+        title="Delete account"
+        text="Permanently removes your account, tasks, goals and focus sessions. This cannot be undone."
+      >
         <form className="pi-form" onSubmit={removeAccount} noValidate>
           <ErrorMessage>{deleteError}</ErrorMessage>
-          <label className="field">Type DELETE to confirm<input value={confirmText} onChange={(event) => setConfirmText(event.target.value)} autoComplete="off" /></label>
-          <label className="field">Password<input type="password" autoComplete="current-password" value={deletePassword} onChange={(event) => setDeletePassword(event.target.value)} /></label>
-          <div><button type="submit" className="primary-btn pi-danger" disabled={deleting || confirmText !== "DELETE" || !deletePassword}>{deleting ? "Deleting..." : "Delete my account"}</button></div>
+          <label className="field">
+            Type DELETE to confirm
+            <input
+              value={confirmText}
+              onChange={(event) => setConfirmText(event.target.value)}
+              autoComplete="off"
+            />
+          </label>
+          <label className="field">
+            Password
+            <input
+              type="password"
+              autoComplete="current-password"
+              value={deletePassword}
+              onChange={(event) => setDeletePassword(event.target.value)}
+            />
+          </label>
+          <div>
+            <button
+              type="submit"
+              className="primary-btn pi-danger"
+              disabled={deleting || confirmText !== "DELETE" || !deletePassword}
+            >
+              {deleting ? "Deleting..." : "Delete my account"}
+            </button>
+          </div>
         </form>
       </Section>
     </main>

@@ -2,7 +2,14 @@ import { WEEKDAYS, monthGrid, toDateString } from "../../utils/date.js";
 import { CATEGORY_COLORS } from "../../constants.js";
 
 // Full-size month view shared by the Planner (Month tab) and Calendar page.
-export default function MonthGrid({ year, month, tasksByDate = {}, extrasByDate = {}, selected, onSelect }) {
+export default function MonthGrid({
+  year,
+  month,
+  tasksByDate = {},
+  extrasByDate = {},
+  selected,
+  onSelect,
+}) {
   const today = toDateString();
   const cells = monthGrid(year, month);
 
@@ -33,7 +40,11 @@ export default function MonthGrid({ year, month, tasksByDate = {}, extrasByDate 
           >
             <span className="pi-day-num">{cell.day}</span>
             {tasks.slice(0, 2).map((task) => (
-              <span key={task._id || task.id} className="pi-chip" style={{ borderColor: CATEGORY_COLORS[task.category] || "#94a3b8" }}>
+              <span
+                key={task._id || task.id}
+                className="pi-chip"
+                style={{ borderColor: CATEGORY_COLORS[task.category] || "#94a3b8" }}
+              >
                 {task.title}
               </span>
             ))}

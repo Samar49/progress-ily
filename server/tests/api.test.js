@@ -41,7 +41,13 @@ test("unknown API route returns JSON 404", async () => {
 });
 
 test("protected routes reject missing and invalid tokens", async () => {
-  for (const path of ["/api/tasks", "/api/goals", "/api/analytics/summary", "/api/focus", "/api/auth/me"]) {
+  for (const path of [
+    "/api/tasks",
+    "/api/goals",
+    "/api/analytics/summary",
+    "/api/focus",
+    "/api/auth/me",
+  ]) {
     const none = await fetch(`${base}${path}`);
     assert.equal(none.status, 401, path);
 
@@ -51,7 +57,9 @@ test("protected routes reject missing and invalid tokens", async () => {
 });
 
 test("an expired token is rejected", async () => {
-  const token = jwt.sign({ userId: "507f1f77bcf86cd799439011" }, process.env.JWT_SECRET, { expiresIn: -10 });
+  const token = jwt.sign({ userId: "507f1f77bcf86cd799439011" }, process.env.JWT_SECRET, {
+    expiresIn: -10,
+  });
   const res = await fetch(`${base}/api/tasks`, { headers: { Authorization: `Bearer ${token}` } });
   assert.equal(res.status, 401);
 });
@@ -75,7 +83,10 @@ test("register validates input before touching the database", async () => {
     });
 
   assert.equal((await post({})).status, 400);
-  assert.equal((await post({ name: "A", email: "not-an-email", password: "password123" })).status, 400);
+  assert.equal(
+    (await post({ name: "A", email: "not-an-email", password: "password123" })).status,
+    400,
+  );
   assert.equal((await post({ name: "A", email: "a@b.co", password: "short" })).status, 400);
 });
 
@@ -83,7 +94,13 @@ test("invalid query parameters are rejected with 400 (valid token, no DB needed)
   const token = jwt.sign({ userId: "507f1f77bcf86cd799439011" }, process.env.JWT_SECRET);
   const headers = { Authorization: `Bearer ${token}` };
 
-  for (const query of ["date=2026-13-45", "status=Bogus", "priority=Urgent", "category=Nope", "startDate=x"]) {
+  for (const query of [
+    "date=2026-13-45",
+    "status=Bogus",
+    "priority=Urgent",
+    "category=Nope",
+    "startDate=x",
+  ]) {
     const res = await fetch(`${base}/api/tasks?${query}`, { headers });
     assert.equal(res.status, 400, query);
   }
@@ -97,9 +114,17 @@ test("rate limiter blocks after the configured maximum", () => {
   const calls = [];
   const makeRes = () => ({
     headers: {},
-    setHeader(key, value) { this.headers[key] = value; },
-    status(code) { this.code = code; return this; },
-    json(body) { this.body = body; return this; },
+    setHeader(key, value) {
+      this.headers[key] = value;
+    },
+    status(code) {
+      this.code = code;
+      return this;
+    },
+    json(body) {
+      this.body = body;
+      return this;
+    },
   });
   const req = { ip: "1.2.3.4" };
 

@@ -43,9 +43,7 @@ const FEATURES = [
 
 function getErrorMessage(error) {
   return (
-    error.response?.data?.message ||
-    error.message ||
-    "Something went wrong. Please try again."
+    error.response?.data?.message || error.message || "Something went wrong. Please try again."
   );
 }
 
@@ -138,7 +136,10 @@ export default function AuthPage({ onAuthenticated, theme, setTheme }) {
           title={`Current: ${theme} mode`}
         >
           <Sun size={16} className="pi-theme-icon pi-sun" />
-          <span className="toggle" style={{ justifyContent: theme === "light" ? "flex-start" : "flex-end" }}>
+          <span
+            className="toggle"
+            style={{ justifyContent: theme === "light" ? "flex-start" : "flex-end" }}
+          >
             <i />
           </span>
           <Moon size={16} className="pi-theme-icon pi-moon" />
@@ -256,14 +257,8 @@ export default function AuthPage({ onAuthenticated, theme, setTheme }) {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder={
-                    isRegistering
-                      ? "At least 8 characters"
-                      : "Enter your password"
-                  }
-                  autoComplete={
-                    isRegistering ? "new-password" : "current-password"
-                  }
+                  placeholder={isRegistering ? "At least 8 characters" : "Enter your password"}
+                  autoComplete={isRegistering ? "new-password" : "current-password"}
                   minLength={8}
                   required
                   disabled={loading}

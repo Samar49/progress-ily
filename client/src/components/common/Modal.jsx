@@ -7,7 +7,14 @@ import { useScrollLock } from "../../hooks.js";
 const FOCUSABLE =
   'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
 
-export default function Modal({ title, subtitle, onClose, children, width = 480, labelledBy = "modal-title" }) {
+export default function Modal({
+  title,
+  subtitle,
+  onClose,
+  children,
+  width = 480,
+  labelledBy = "modal-title",
+}) {
   const ref = useRef(null);
   useScrollLock(true); // the page behind the dialog must not scroll
   // Keep the latest onClose without re-running the focus effect below.
@@ -75,6 +82,6 @@ export default function Modal({ title, subtitle, onClose, children, width = 480,
         {children}
       </div>
     </div>,
-    host
+    host,
   );
 }
